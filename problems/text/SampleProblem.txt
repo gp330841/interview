@@ -1,0 +1,6 @@
+Problem: Find the sum of all elements in an integer array.
+
+Input: An array of integers, e.g., [1, 2, 3, 4, 5]
+Output: The sum, e.g., 15
+
+You may discuss how you approached the problem, constraints, and alternatives here.
