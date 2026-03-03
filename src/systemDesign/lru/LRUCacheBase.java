@@ -1,4 +1,4 @@
-package systemDesign;
+package systemDesign.lru;
 
 import java.util.HashMap;
 import java.util.Map;

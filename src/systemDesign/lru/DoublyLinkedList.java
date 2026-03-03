@@ -1,4 +1,4 @@
-package systemDesign;
+package systemDesign.lru;
 
 public class DoublyLinkedList<K, V> {
     private Node<K, V> head;

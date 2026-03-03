@@ -1,4 +1,4 @@
-package systemDesign;
+package systemDesign.lru;
 
 import java.io.Serializable;
 

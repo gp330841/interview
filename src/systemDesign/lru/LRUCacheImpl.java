@@ -1,4 +1,4 @@
-package systemDesign;
+package systemDesign.lru;
 
 public class LRUCacheImpl<K, V> extends LRUCacheBase<K, V> {
     private final DoublyLinkedList<K, V> dll;
