@@ -1,10 +1,7 @@
 package systemDesign;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
-public class LRUCacheImpl extends LRUCacheBase<String, String> {
-    private final DoublyLinkedList<String, String> dll;
+public class LRUCacheImpl<K, V> extends LRUCacheBase<K, V> {
+    private final DoublyLinkedList<K, V> dll;
 
     public LRUCacheImpl(Integer cacheCapacity) {
         super(cacheCapacity);
@@ -13,28 +10,31 @@ public class LRUCacheImpl extends LRUCacheBase<String, String> {
 
 
     @Override
-    Node<String, String> get(String key) {
-        Node<String, String> node = map.get(key);
+    Node<K, V> get(K key) {
+        if(!map.containsKey(key)) {
+            return null;
+        }
+        Node<K, V> node = map.get(key);
         dll.moveToFront(node);
         printMap();
         return node;
     }
 
     @Override
-    Node<String, String> put(String key, String value) {
-        Node<String, String> resultNode;
+    Node<K, V> put(K key, V value) {
+        Node<K, V> resultNode;
         if(map.containsKey(key)) {
-            Node<String, String> node = map.get(key);
+            Node<K, V> node = map.get(key);
             node.setValue(value);
             dll.moveToFront(node);
             resultNode = node;
         } else {
             if(map.size()>=cacheCapacity) {
-                Node<String, String> removeNode = dll.removeLast();
+                Node<K, V> removeNode = dll.removeLast();
                 map.remove(removeNode.getKey());
             }
 
-            Node<String,String> newNode = new Node<>(key, value);
+            Node<K, V> newNode = new Node<>(key, value);
             map.put(key, newNode);
             dll.addFirst(newNode);
             resultNode = newNode;

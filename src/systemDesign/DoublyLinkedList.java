@@ -32,10 +32,14 @@ public class DoublyLinkedList<K, V> {
     }
 
     public Node<K, V> removeLast() {
-        Node<K, V> prev = tail.getPrev();
-        prev.setNext(tail);
-        tail.setPrev(prev);
-        return prev;
+        Node<K, V> lastNode = tail.getPrev();
+        // Check if list is empty (only dummies present)
+        if (lastNode == head) {
+            return null;
+        }
+        remove(lastNode);
+
+        return lastNode;
     }
 
 
