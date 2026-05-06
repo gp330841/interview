@@ -10,13 +10,13 @@ package javaBasics.multithreading;
  * - Thread B executes when turn == 1
  * - Thread C executes when turn == 2
  */
-public class PrintABCSequence {
+public class Q5_PrintABCSequence {
 
     private int maxCount; // How many sequences we want
     private int turn = 0; // 0 for A, 1 for B, 2 for C
     private int printedCount = 0; // Keep track of the number of letters printed to terminate gracefully
 
-    public PrintABCSequence(int maxCount) {
+    public Q5_PrintABCSequence(int maxCount) {
         this.maxCount = maxCount;
     }
 
@@ -44,7 +44,7 @@ public class PrintABCSequence {
 
     public static void main(String[] args) {
         // Print the sequence 5 times
-        PrintABCSequence printer = new PrintABCSequence(5);
+        Q5_PrintABCSequence printer = new Q5_PrintABCSequence(5);
 
         // A prints if turn == 0, next turn becomes 1
         Thread tA = new Thread(() -> printer.print('A', 0, 1), "Thread-A");

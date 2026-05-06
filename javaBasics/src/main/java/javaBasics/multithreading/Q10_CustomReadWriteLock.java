@@ -14,7 +14,7 @@ package javaBasics.multithreading;
  * - Write Lock request: Allowed if `readersCount == 0` and `writersCount == 0`.
  * - Write Unlock: Decrement `writersCount` and notifyAll().
  */
-public class CustomReadWriteLock {
+public class Q10_CustomReadWriteLock {
 
     private int readersCount = 0;
     private int writersCount = 0;
@@ -51,7 +51,7 @@ public class CustomReadWriteLock {
     }
 
     public static void main(String[] args) {
-        CustomReadWriteLock rwLock = new CustomReadWriteLock();
+        Q10_CustomReadWriteLock rwLock = new Q10_CustomReadWriteLock();
 
         // Runnable simulating a Read operation
         Runnable readTask = () -> {

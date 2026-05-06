@@ -15,7 +15,7 @@ import java.util.concurrent.RecursiveTask;
  * NOTE: For large N, it's highly inefficient without memoization, but perfectly demonstrates
  * how Fork-Join frameworks handle massive recursive sub-tasking over available CPU cores.
  */
-public class MultithreadedFibonacci {
+public class Q9_MultithreadedFibonacci {
 
     // Inherits RecursiveTask because returning a result. (Use RecursiveAction for no return).
     static class FibonacciTask extends RecursiveTask<Long> {

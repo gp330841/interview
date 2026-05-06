@@ -12,12 +12,12 @@ import java.util.Queue;
  * 
  * We use `synchronized`, `wait()`, and `notifyAll()` to manage thread coordination natively.
  */
-public class CustomBlockingQueue<E> {
+public class Q8_CustomBlockingQueue<E> {
 
     private final Queue<E> queue;
     private final int capacity;
 
-    public CustomBlockingQueue(int capacity) {
+    public Q8_CustomBlockingQueue(int capacity) {
         this.queue = new LinkedList<>();
         this.capacity = capacity;
     }
@@ -46,7 +46,7 @@ public class CustomBlockingQueue<E> {
     }
 
     public static void main(String[] args) {
-        CustomBlockingQueue<Integer> myBlockingQueue = new CustomBlockingQueue<>(3);
+        Q8_CustomBlockingQueue<Integer> myBlockingQueue = new Q8_CustomBlockingQueue<>(3);
 
         Thread producer = new Thread(() -> {
             try {

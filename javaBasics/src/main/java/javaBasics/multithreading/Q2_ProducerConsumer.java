@@ -12,7 +12,7 @@ import java.util.Queue;
  * - If the buffer is full, the Producer must wait.
  * - If the buffer is empty, the Consumer must wait.
  */
-public class ProducerConsumer {
+public class Q2_ProducerConsumer {
 
     public static void main(String[] args) {
         SharedBuffer buffer = new SharedBuffer(5); // Buffer size of 5

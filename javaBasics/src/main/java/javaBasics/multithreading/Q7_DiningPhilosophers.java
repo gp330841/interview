@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Let the last philosopher pick up the right chopstick first, then the left chopstick.
  * This guarantees at least one philosopher can eat, preventing a deadlock cycle.
  */
-public class DiningPhilosophers {
+public class Q7_DiningPhilosophers {
 
     public static void main(String[] args) {
         int numOfPhilosophers = 5;

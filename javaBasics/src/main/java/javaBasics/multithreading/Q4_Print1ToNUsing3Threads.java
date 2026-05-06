@@ -11,12 +11,12 @@ package javaBasics.multithreading;
  * - Thread 2 handles numbers where `counter % 3 == 2`
  * - Thread 3 handles numbers where `counter % 3 == 0`
  */
-public class Print1ToNUsing3Threads {
+public class Q4_Print1ToNUsing3Threads {
 
     private int max;
     private int counter = 1;
 
-    public Print1ToNUsing3Threads(int max) {
+    public Q4_Print1ToNUsing3Threads(int max) {
         this.max = max;
     }
 
@@ -44,7 +44,7 @@ public class Print1ToNUsing3Threads {
     }
 
     public static void main(String[] args) {
-        Print1ToNUsing3Threads printer = new Print1ToNUsing3Threads(15);
+        Q4_Print1ToNUsing3Threads printer = new Q4_Print1ToNUsing3Threads(15);
 
         // Thread 1 handles elements % 3 == 1
         Thread t1 = new Thread(() -> printer.print(1), "Thread-1");

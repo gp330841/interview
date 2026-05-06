@@ -10,12 +10,12 @@ package javaBasics.multithreading;
  * We use wait() to put a thread to sleep and notify() to wake up the other thread
  * after updating the counter.
  */
-public class OddEvenPrinter {
+public class Q1_OddEvenPrinter {
 
     private int max;
     private int counter = 1;
 
-    public OddEvenPrinter(int max) {
+    public Q1_OddEvenPrinter(int max) {
         this.max = max;
     }
 
@@ -62,7 +62,7 @@ public class OddEvenPrinter {
     }
 
     public static void main(String[] args) {
-        OddEvenPrinter printer = new OddEvenPrinter(10); // Print up to 10
+        Q1_OddEvenPrinter printer = new Q1_OddEvenPrinter(10); // Print up to 10
 
         Thread oddThread = new Thread(printer::printOdd, "OddThread");
         Thread evenThread = new Thread(printer::printEven, "EvenThread");

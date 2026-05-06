@@ -14,26 +14,26 @@ package javaBasics.multithreading;
  *    (Without `volatile`, a thread might see a partially initialized object due to instruction reordering).
  * 3. We check for null, synchronize if necessary, and check for null again.
  */
-public class ThreadSafeSingleton {
+public class Q3_ThreadSafeSingleton {
 
     // Requirement 2: Volatile reference to prevent instruction reordering
-    private static volatile ThreadSafeSingleton instance;
+    private static volatile Q3_ThreadSafeSingleton instance;
 
     // Requirement 1: Private constructor
-    private ThreadSafeSingleton() {
+    private Q3_ThreadSafeSingleton() {
         System.out.println("Singleton instance created! By: " + Thread.currentThread().getName());
     }
 
-    public static ThreadSafeSingleton getInstance() {
+    public static Q3_ThreadSafeSingleton getInstance() {
         // First check (Lock-free): Avoid synchronization once instance is initialized
         if (instance == null) {
             
             // Synchronize only on the first few threads attempting creation concurrently
-            synchronized (ThreadSafeSingleton.class) {
+            synchronized (Q3_ThreadSafeSingleton.class) {
                 
                 // Second check (Double-Checked Lock): Ensures only the very first thread inside the block creates it
                 if (instance == null) {
-                    instance = new ThreadSafeSingleton();
+                    instance = new Q3_ThreadSafeSingleton();
                 }
             }
         }
@@ -43,7 +43,7 @@ public class ThreadSafeSingleton {
     public static void main(String[] args) {
         // Create multiple threads trying to get the instance simultaneously
         Runnable task = () -> {
-            ThreadSafeSingleton s = ThreadSafeSingleton.getInstance();
+            Q3_ThreadSafeSingleton s = Q3_ThreadSafeSingleton.getInstance();
             System.out.println("Got instance: " + s.hashCode() + " in thread " + Thread.currentThread().getName());
         };
 

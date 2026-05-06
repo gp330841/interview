@@ -10,13 +10,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  * 1. A Task Queue (BlockingQueue) where submitted runnables wait.
  * 2. A predefined number of Worker Threads that constantly pop tasks from the queue and run them.
  */
-public class CustomThreadPool {
+public class Q6_CustomThreadPool {
 
     private final LinkedBlockingQueue<Runnable> taskQueue;
     private final WorkerThread[] workerThreads;
     private volatile boolean isStopped = false;
 
-    public CustomThreadPool(int numThreads) {
+    public Q6_CustomThreadPool(int numThreads) {
         taskQueue = new LinkedBlockingQueue<>();
         workerThreads = new WorkerThread[numThreads];
 
@@ -68,7 +68,7 @@ public class CustomThreadPool {
     }
 
     public static void main(String[] args) {
-        CustomThreadPool threadPool = new CustomThreadPool(3);
+        Q6_CustomThreadPool threadPool = new Q6_CustomThreadPool(3);
 
         // Submit 10 tasks to a 3-thread pool
         for (int i = 1; i <= 10; i++) {

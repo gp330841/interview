@@ -1,4 +1,4 @@
-package javaBasics;
+package javaBasics.JavaFeatures;
 
 import java.util.List;
 
