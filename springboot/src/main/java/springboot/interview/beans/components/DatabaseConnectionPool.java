@@ -2,6 +2,8 @@ package springboot.interview.beans.components;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
@@ -9,27 +11,29 @@ import org.springframework.stereotype.Component;
 @Component
 public class DatabaseConnectionPool implements InitializingBean, DisposableBean {
 
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseConnectionPool.class);
+
     public DatabaseConnectionPool() {
-        System.out.println("1. DatabaseConnectionPool: Constructor called.");
+        logger.info("1. DatabaseConnectionPool: Constructor called.");
     }
 
     @PostConstruct
-    public void customInit() {
-        System.out.println("2. DatabaseConnectionPool: @PostConstruct called.");
+    public void init() {
+        logger.info("2. DatabaseConnectionPool: @PostConstruct called.");
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        System.out.println("3. DatabaseConnectionPool: InitializingBean.afterPropertiesSet called.");
+        logger.info("3. DatabaseConnectionPool: InitializingBean.afterPropertiesSet called.");
     }
 
     @PreDestroy
-    public void customDestroy() {
-        System.out.println("4. DatabaseConnectionPool: @PreDestroy called.");
+    public void cleanup() {
+        logger.info("4. DatabaseConnectionPool: @PreDestroy called.");
     }
 
     @Override
     public void destroy() throws Exception {
-        System.out.println("5. DatabaseConnectionPool: DisposableBean.destroy called.");
+        logger.info("5. DatabaseConnectionPool: DisposableBean.destroy called.");
     }
 }

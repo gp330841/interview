@@ -6,25 +6,36 @@ import springboot.interview.domain.entity.User;
 import springboot.interview.domain.repository.UserRepository;
 import springboot.interview.exceptions.components.ResourceNotFoundException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import springboot.interview.observability.components.MdcExampleService;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserRestController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserRestController.class);
+    
     private final UserRepository userRepository;
+    private final MdcExampleService mdcExampleService;
 
-    public UserRestController(UserRepository userRepository) {
+    public UserRestController(UserRepository userRepository, MdcExampleService mdcExampleService) {
         this.userRepository = userRepository;
+        this.mdcExampleService = mdcExampleService;
     }
 
     @GetMapping
     public List<User> getAllUsers() {
+        // Trigger MDC logging simulation
+        mdcExampleService.processWithMdc();
+        logger.info("Fetching all users from the database...");
         return userRepository.findAll();
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    public User getUserById(@PathVariable("id") Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
