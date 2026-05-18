@@ -1,15 +1,14 @@
-package springboot.interview.jpa;
+package springboot.interview.domain.entity;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "employees") // Maps to 'employees' table in DB
+@Table(name = "employees")
 public class Employee {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment primary key
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -18,27 +17,20 @@ public class Employee {
     @Column(unique = true)
     private String email;
 
-    // Many Employees belong to One Department
-    // FetchType.LAZY is best practice for performance
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id") // Foreign key column
+    @JoinColumn(name = "department_id")
     private Department department;
 
-    // One Employee can have Many Tasks
-    @OneToMany(mappedBy = "assignee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "assignee")
     private List<Task> tasks = new ArrayList<>();
 
-    // Constructors
     public Employee() {}
-
     public Employee(String name, String email) {
         this.name = name;
         this.email = email;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getEmail() { return email; }
@@ -46,5 +38,4 @@ public class Employee {
     public Department getDepartment() { return department; }
     public void setDepartment(Department department) { this.department = department; }
     public List<Task> getTasks() { return tasks; }
-    public void setTasks(List<Task> tasks) { this.tasks = tasks; }
 }
