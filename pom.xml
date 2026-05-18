@@ -13,9 +13,7 @@
         <module>java-concepts</module>
         <module>systemDesign</module>
         <module>codingInInterview</module>
-        <module>kafka</module>
-        <module>redis</module>
-        <module>springboot-interview</module>
+        <module>springboot</module>
     </modules>
 
     <properties>
