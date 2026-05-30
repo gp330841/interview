@@ -1,5 +1,5 @@
 
-package com.interview.javaconcepts.multithreading;
+package com.interview.javaconcepts.multithreading.concepts;
 
 /**
  * Demonstrates the basic ways to create and run threads in Java:

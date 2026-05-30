@@ -1,75 +1,87 @@
-# Multithreading & Concurrency in Java
+# Advanced Multithreading & Concurrency in Java
 
-This module covers concurrent programming in Java, the Java Memory Model (JMM), thread pools, Virtual Threads (Project Loom), and classical concurrency coding puzzles.
-
----
-
-## 🌟 Core Concepts
-
-Java supports multithreading natively at the language level. Modern concurrency is managed through low-level primitives (`volatile`, `synchronized`) and high-level wrappers (`java.util.concurrent`).
-
-### 1. Thread Lifecycle
-A thread can reside in one of the following states:
-`NEW` ➡️ `RUNNABLE` ➡️ `BLOCKED` (waiting for lock) ➡️ `WAITING` (wait/join) ➡️ `TIMED_WAITING` (sleep) ➡️ `TERMINATED`.
-
-### 2. The Java Memory Model (JMM)
-The JMM defines how threads interact through memory. It establishes the critical **Happens-Before Relationship**:
-- **Volatile Variable Rule**: A write to a `volatile` variable happens-before every subsequent read of that same variable. This prevents compiler/CPU instruction reordering and guarantees thread-visibility.
-- **Monitor Lock Rule**: An unlock on a monitor happens-before every subsequent lock on that same monitor.
+This module covers concurrent programming in Java, ranging from low-level thread mechanics and the Java Memory Model (JMM) to high-performance concurrent synchronizers, non-blocking lock-free structures, and Project Loom's Virtual Threads.
 
 ---
 
-## ❓ Frequently Asked Interview Questions
+## 📂 Package Reorganization
 
-### Q1: What is the difference between `volatile` and `synchronized`?
-| Feature | `volatile` | `synchronized` |
+The package has been structured to cleanly isolate **Core Concepts & Tutorials** from **Classical Concurrency Interview Coding Questions**:
+
+*   **`com.interview.javaconcepts.multithreading.concepts`**: Dedicated to in-depth conceptual code demos, API breakdowns, and advanced concurrency primitives.
+*   **`com.interview.javaconcepts.multithreading.questions`**: Dedicated to implementing classical concurrent interview challenges (e.g., custom queues, coordination patterns, synchronizers).
+
+---
+
+## 🌟 Core Concepts & Code Demos
+
+Below is a breakdown of the comprehensive concept files implemented in the `concepts/` directory:
+
+| Topic / Primitives | Source File | Key Architectural Takeaway |
 | :--- | :--- | :--- |
-| **Applicability** | Variables only | Methods and blocks only |
-| **Type of Operation** | Non-blocking (lock-free) | Blocking (requires thread locking) |
-| **Visibility** | Guarantees visibility across threads | Guarantees both visibility and atomicity |
-| **Mutual Exclusion** | No (multiple threads can write at once) | Yes (only one thread runs block at a time) |
+| **Thread Basics & Lifecycle** | [`ThreadBasicsDemo.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/ThreadBasicsDemo.java) | Deep-dive into JVM thread states (`NEW`, `RUNNABLE`, `BLOCKED`, `WAITING`, `TIMED_WAITING`, `TERMINATED`), `join()` blocking, priority scheduler hints, and **Cooperative Interruption** practices (re-asserting interrupt flags). |
+| **Thread Creation** | [`ThreadCreation.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/ThreadCreation.java) | Contrast `Thread` inheritance vs `Runnable` composition vs `Callable<V>` futures. |
+| **Lock Synchronization** | [`SynchronizationDemo.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/SynchronizationDemo.java) | Instance locks (`this`) vs Class-level locks (`Class`), fine-grained synchronized blocks, and CPU monitor lock reentrancy. |
+| **Memory Visibility** | [`VolatileKeyword.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/VolatileKeyword.java) & [`OrderWorkerBroken.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/OrderWorkerBroken.java) | Visualizes local CPU register/L1 thread caching. Demonstrates how `volatile` creates memory barriers to force flushing to main memory. |
+| **Deadlock & Prevention** | [`DeadlockDemo.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/DeadlockDemo.java) | Recreates Coffman deadlock conditions (Circular Wait). Shows mitigation using strict lock ordering and non-blocking timed acquisitions (`tryLock()`). |
+| **Low-Level Coordination** | [`ThreadCommunicationDemo.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/ThreadCommunicationDemo.java) | Monitor-based thread communication using `wait()`, `notify()`, and `notifyAll()`. Demonstrates avoiding **Spurious Wakeups** via standard `while` loop checks. |
+| **Executor Framework** | [`ExecutorsAndFutures.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/ExecutorsAndFutures.java) | Explains `ThreadPoolExecutor` architecture, work queues, core vs max thread scaling, and futures. |
+| **Asynchronous Pipelines** | [`CompletableFuturesExample.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/CompletableFuturesExample.java) | Builds non-blocking event-driven pipeline composition (`thenApplyAsync`, `thenCombine`). |
+| **Explicit Locking** | [`ReentrantLockAndCondition.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/ReentrantLockAndCondition.java) | Showcase `ReentrantLock` properties (fairness policies, explicit unlocking). Implements a highly optimized bounded buffer using multiple `Condition` queues. |
+| **Concurrent Synchronizers** | [`SynchronizersDemo.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/SynchronizersDemo.java) | Complete implementation of **CountDownLatch** (one-time latches), **CyclicBarrier** (reusable checkpoints), and **Semaphore** (resource throttling). |
+| **Fork/Join Work-Stealing** | [`ForkJoinPoolDemo.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/ForkJoinPoolDemo.java) | Divide-and-conquer processing using `RecursiveTask<V>`. Maps out internal Work-Stealing deque behaviors. |
+| **Atomics & CAS** | [`AtomicClassesDemo.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/AtomicClassesDemo.java) | Hardware-level lock-free Compare-And-Swap (CAS). Showcases highly memory-efficient **`AtomicIntegerFieldUpdater`** to avoid wrapper class allocations. |
+| **StampedLock & Optimistic Reads**| [`StampedLockExample.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/StampedLockExample.java) | Implements lock-free **Optimistic Reading** with validation fallbacks. Prevents reader-writer starvation. Covers its critical non-reentrant rule. |
+| **Striped Cell Counters** | [`LongAdderPerformance.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/LongAdderPerformance.java) | Performance benchmark showing `LongAdder` vs `AtomicLong` CAS loop contention. Explains cache-line cell-striping. |
+| **Loom Carrier Pinning** | [`VirtualThreadPinningDemo.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/VirtualThreadPinningDemo.java) | Visualizes Project Loom virtual threads pinning OS carrier threads inside `synchronized` blocks. Outlines the clean refactoring fix using `ReentrantLock`. |
+| **Lock-Free Treiber Stack** | [`LockFreeStack.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/concepts/LockFreeStack.java) | Builds a lock-free Treiber stack using `AtomicReference` CAS loops. Details the theoretical **ABA Problem** and its mitigation. |
 
 ---
 
-### Q2: What is a Deadlock and how can we prevent it?
-A deadlock occurs when thread A holds lock 1 and waits for lock 2, while thread B holds lock 2 and waits for lock 1. Neither can proceed.
-- **Conditions for Deadlock (Coffman Conditions)**:
-  1. Mutual Exclusion
-  2. Hold and Wait
-  3. No Preemption
-  4. Circular Wait
-- **Prevention**: Acquire locks in a strict global order, use timed lock acquisitions (`tryLock()`), or avoid nesting locks altogether.
+## ❓ Coding Interview Puzzles
+
+These classic concurrency questions are located in the `questions/` package:
+
+1.  **[`Q1_OddEvenPrinter.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/questions/Q1_OddEvenPrinter.java) / [`OddEven.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/questions/OddEven.java)**: Coordinate alternating numbers between two threads using wait/notify locks.
+2.  **[`Q2_ProducerConsumer.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/questions/Q2_ProducerConsumer.java)**: Standard Producer-Consumer blocking queue using synchronized wait/notify monitors.
+3.  **[`Q3_ThreadSafeSingleton.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/questions/Q3_ThreadSafeSingleton.java)**: Double-Checked Locking (DCL) singleton pattern. Explains why the instance variable **must** be marked `volatile` to prevent instruction reordering during instantiation.
+4.  **[`Q4_Print1ToNUsing3Threads.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/questions/Q4_Print1ToNUsing3Threads.java)**: Print sequential numbers 1 to N using three threads in round-robin order.
+5.  **[`Q5_PrintABCSequence.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/questions/Q5_PrintABCSequence.java)**: Coordinate threads to print "ABCABC..." repeatedly.
+6.  **[`Q6_CustomThreadPool.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/questions/Q6_CustomThreadPool.java)**: Implement a custom, runnable thread pool mimicking `FixedThreadPool` with worker threads and a custom task queue.
+7.  **[`Q7_DiningPhilosophers.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/questions/Q7_DiningPhilosophers.java)**: Classical resource allocation puzzle. Prevents circular wait by forcing the last philosopher to pick up chopsticks in reverse order.
+8.  **[`Q8_CustomBlockingQueue.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/questions/Q8_CustomBlockingQueue.java)**: Implement a custom bounded blocking queue from scratch using lock monitors.
+9.  **[`Q9_MultithreadedFibonacci.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/questions/Q9_MultithreadedFibonacci.java)**: Compute fibonacci terms concurrently using parallel callable threads.
+10. **[`Q10_CustomReadWriteLock.java`](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/questions/Q10_CustomReadWriteLock.java)**: Build a custom read-write lock protecting shared data from writers while allowing concurrent readers.
 
 ---
 
-### Q3: Explain Virtual Threads in Java 21 (Project Loom)?
-> [!IMPORTANT]
-> A highly modern Java concurrency question. Virtual threads are lightweight threads that do not map 1:1 to OS threads.
+## 🧠 Architectural Deep-Dive for Senior Engineers
 
-- **Classic Platform Threads**: Map 1:1 to operating system threads. They are expensive (require ~1MB stack memory), and context switching consumes OS cycles. Limit concurrency to a few thousand threads.
-- **Virtual Threads**: Managed by the JVM. They are extremely lightweight (~hundreds of bytes stack memory), mapping thousands of virtual threads onto a few OS "Carrier Threads". When a virtual thread makes a blocking IO call, the JVM unmounts it from the carrier thread, freeing the carrier thread to execute other virtual tasks.
+### 1. The Java Memory Model (JMM) & Happens-Before Guarantees
+Modern CPU architectures do not write values directly to main memory; they write to fast local L1/L2/L3 caches. Compilation steps (both JIT and compiler) along with out-of-order CPU executions frequently reorder assembly instructions to maximize instruction pipelining.
+The JMM defines formal guarantees to enforce thread safety:
+*   **Happens-Before Relationship**: A set of visibility rules. If action $A$ happens-before $B$, then $A$'s changes are guaranteed to be fully visible to the thread executing $B$.
+*   **Volatile Variables**: A write to a `volatile` variable establishes a happens-before relationship to any subsequent read of that variable. At the CPU level, this inserts a **Memory Barrier (Fence)** instruction, flushing write buffers to main memory and invalidating readers' L1 caches.
+*   **Monitor Locks**: Releasing a monitor lock happens-before acquiring that exact same monitor.
 
----
+### 2. False Sharing & Striped Counters (`LongAdder` vs `AtomicLong`)
+CPU cache lines are typically 64 bytes wide. If two variables are physically located adjacent to each other in memory, they occupy the same cache line. If Thread 1 is writing to variable $X$ and Thread 2 is writing to variable $Y$:
+*   When Thread 1 writes to $X$, it invalidates the entire cache line in Thread 2's core.
+*   Thread 2 must reload the cache line from L3 or main memory, even though it is writing to $Y$, not $X$.
+*   This performance-degrading phenomenon is called **False Sharing**.
+*   **`LongAdder`** resolves false sharing internally by using the `@Contended` annotation on its dynamic `Cell` array, forcing separate cells onto distinct cache lines. Coupled with thread-hashing, it eliminates CAS-spinning bottlenecks.
 
-### Q4: What is the difference between `Runnable` and `Callable`?
-- **Runnable**: Defines `run()` return-type `void`, cannot throw checked exceptions.
-- **Callable**: Defines `call()` return-type `V` (generic result), can throw checked exceptions. Used with `ExecutorService` returning a `Future` handle.
+### 3. Work-Stealing in `ForkJoinPool`
+Standard thread pools use a single shared blocking task queue. Under high thread counts, threads contend heavily for the queue's lock.
+The `ForkJoinPool` avoids this using **Work-Stealing**:
+*   Every worker thread owns a private **Double-Ended Queue (Deque)**.
+*   When a task spawns a subtask (`fork()`), it pushes it to the **HEAD** of its own deque.
+*   Worker threads process their own tasks in **LIFO** order (popping from the HEAD), maximizing cache locality.
+*   When a thread is idle, it steals a task from the **TAIL** of a busy thread's deque in **FIFO** order (minimizing lock contention with the owner, who is working at the head).
 
----
-
-### Q5: How does Double-Checked Locking work for Singleton?
-To avoid thread-synchronization overhead every time `getInstance()` is called, we check if instance is null twice, locking only once.
-The instance variable **must** be declared `volatile` to prevent instruction reordering during instantiation (avoiding exposing a partially initialized object).
-
----
-
-## 🛠️ Code Examples
-- **[ThreadCreation.java](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/ThreadCreation.java)**: Classic Thread vs Runnable vs Callable.
-- **[VolatileKeyword.java](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/VolatileKeyword.java)**: Practical visibility issues solved by volatile.
-- **[VirtualThreadsExample.java](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/VirtualThreadsExample.java)**: Running massive virtual concurrent tasks.
-- **[CompletableFuturesExample.java](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/src/main/java/com/interview/javaconcepts/multithreading/CompletableFuturesExample.java)**: Asynchronous non-blocking pipelines.
-- **Coding Interview Puzzles in this module**:
-  - `Q1_OddEvenPrinter.java`: Print odd/even using two threads.
-  - `Q2_ProducerConsumer.java`: Producer-Consumer pattern using wait/notify.
-  - `Q6_CustomThreadPool.java`: Implement thread pool manually.
-  - `Q8_CustomBlockingQueue.java`: Implement bounded thread-safe queue.
+### 4. Carrier Thread Pinning in Project Loom (Virtual Threads)
+Project Loom introduces Virtual Threads (lightweight M:N concurrent fibers). Instead of a 1:1 mapping to OS threads, thousands of virtual threads are scheduled onto a small pool of carrier OS threads.
+When a virtual thread makes a blocking call (e.g., waiting on socket reading, sleeping), the JVM's virtual thread scheduler unmounts the virtual thread, freeing the carrier thread.
+**The Pinning Defect**:
+If a virtual thread performs blocking operations inside a `synchronized` block/method, or inside a native JNI call, Loom *cannot* unmount the thread. It becomes **Pinned** to the carrier thread.
+If all carrier threads become pinned, the system stalls. To prevent pinning, senior developers **must** refactor blocking synchronized sections to use explicit `ReentrantLock` wrappers.

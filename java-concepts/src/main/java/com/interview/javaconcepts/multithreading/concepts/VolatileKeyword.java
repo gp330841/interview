@@ -1,4 +1,4 @@
-package com.interview.javaconcepts.multithreading;
+package com.interview.javaconcepts.multithreading.concepts;
 
 /**
  * Demonstrates the concept of 'volatile' keyword in Multithreading.

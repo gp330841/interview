@@ -1,4 +1,4 @@
-package com.interview.javaconcepts.multithreading;
+package com.interview.javaconcepts.multithreading.questions;
 
 import java.util.LinkedList;
 import java.util.Queue;

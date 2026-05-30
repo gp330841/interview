@@ -1,4 +1,4 @@
-package com.interview.javaconcepts.multithreading;
+package com.interview.javaconcepts.multithreading.concepts;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

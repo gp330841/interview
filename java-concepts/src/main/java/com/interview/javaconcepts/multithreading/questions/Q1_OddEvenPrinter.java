@@ -1,4 +1,4 @@
-package com.interview.javaconcepts.multithreading;
+package com.interview.javaconcepts.multithreading.questions;
 
 /**
  * Print odd and even numbers using two threads (alternating sequence).

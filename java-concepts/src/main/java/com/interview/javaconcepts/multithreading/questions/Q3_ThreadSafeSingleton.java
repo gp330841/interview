@@ -1,4 +1,4 @@
-package com.interview.javaconcepts.multithreading;
+package com.interview.javaconcepts.multithreading.questions;
 
 /**
  * Implement a thread-safe Singleton (Double-Checked Locking).
