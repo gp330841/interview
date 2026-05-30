@@ -75,6 +75,8 @@ Click on any concept below to explore its directory:
     - Covers `@SpringBootTest`, `@WebMvcTest`, `@DataJpaTest`, and Mockito.
 17. **[Docker & Orchestration (Multi-Stage Layering)](DOCKER_README.md)** 
     - Comprehensive guide to building optimized JRE 25 images, multi-stage JAR layering caching, and Zookeeper-less KRaft Kafka + Redis orchestration.
+18. **[Kubernetes Cloud-Native Deployment](KUBERNETES_README.md)** 
+    - Declarative K8s manifests (Deployments, Services, ConfigMaps) with deep conceptual guides on G1GC container awareness, Liveness/Readiness probes, and Zero-Downtime Rolling Updates.
 
 ---
 

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-app-deployment
+  labels:
+    app: springboot-app
+spec:
+  replicas: 2 # Standard multi-instance deployment for High Availability
+  selector:
+    matchLabels:
+      app: springboot-app
+  template:
+    metadata:
+      labels:
+        app: springboot-app
+    spec:
+      containers:
+        - name: springboot-app
+          image: springboot-interview:latest # Matches locally built image name
+          imagePullPolicy: IfNotPresent # Crucial for local dev (Minikube/Kind)
+          ports:
+            - containerPort: 8080
+          resources:
+            # Memory limits prevent JVM from triggering host-level OOM crash.
+            # Java 25 is container-aware and uses these limits to scale heap size.
+            limits:
+              cpu: "1000m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+          envFrom:
+            - configMapRef:
+                name: springboot-app-config
+          # Liveness probe checks if the container is healthy. If it fails, K8s restarts it.
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            failureThreshold: 3
+          # Readiness probe checks if the app is ready to take traffic. If it fails, traffic is rerouted.
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-app-service
+spec:
+  selector:
+    app: springboot-app
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer # Exposes the service externally (accessible on localhost:8080 in Docker Desktop/Minikube)
