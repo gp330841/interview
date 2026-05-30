@@ -30,16 +30,23 @@ public class ThreadCreation {
 
         Thread t2 = new Thread(myRunnable, "MyRunnableThread");
         t2.start();
+
+        Thread t3 = new Thread(
+                ()-> System.out.println("thread 3 using runnable")
+        );
+        t3.start();
         
         try {
             // Join makes the main thread wait for t1 and t2 to finish before continuing
             t1.join();
             t2.join();
+            t3.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         System.out.println("Main thread finished.");
+
     }
 }
 

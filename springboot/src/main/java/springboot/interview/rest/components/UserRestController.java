@@ -13,7 +13,7 @@ import springboot.interview.observability.components.MdcExampleService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 public class UserRestController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserRestController.class);

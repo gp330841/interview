@@ -73,6 +73,8 @@ Click on any concept below to explore its directory:
     - Demonstrates passing correlation IDs using SLF4J MDC (Mapped Diagnostic Context).
 16. **[Testing](src/main/java/springboot/interview/testing)** 
     - Covers `@SpringBootTest`, `@WebMvcTest`, `@DataJpaTest`, and Mockito.
+17. **[Docker & Orchestration (Multi-Stage Layering)](DOCKER_README.md)** 
+    - Comprehensive guide to building optimized JRE 25 images, multi-stage JAR layering caching, and Zookeeper-less KRaft Kafka + Redis orchestration.
 
 ---
 
