@@ -26,32 +26,32 @@ This diagram shows how K8s orchestrates the pods, maps communication via interna
 
 ```mermaid
 graph TD
-    subgraph Host Machine (External)
-        Client[External Client<br>Browser / Curl]
-        LocalPort[http://localhost:8080]
+    subgraph HostMachine ["Host Machine (External)"]
+        Client["External Client (Browser / Curl)"]
+        LocalPort["http://localhost:8080"]
     end
 
-    subgraph Kubernetes Local Cluster (Docker Desktop)
-        subgraph Services (Routing & Load Balancing)
-            AppSvc[springboot-app-service<br>Type: LoadBalancer<br>Port: 8080]
-            RedisSvc[redis-service<br>Type: ClusterIP<br>Port: 6379]
-            KafkaSvc[kafka-service<br>Type: ClusterIP<br>Port: 29092]
+    subgraph K8sCluster ["Kubernetes Local Cluster (Docker Desktop)"]
+        subgraph Services ["Services (Routing & Load Balancing)"]
+            AppSvc["springboot-app-service (Type: LoadBalancer, Port: 8080)"]
+            RedisSvc["redis-service (Type: ClusterIP, Port: 6379)"]
+            KafkaSvc["kafka-service (Type: ClusterIP, Port: 29092)"]
         end
 
-        subgraph Deployments & Pods
-            subgraph Spring Boot Pods (HA Replicas)
-                Pod1[springboot-app-pod-1<br>Port: 8080]
-                Pod2[springboot-app-pod-2<br>Port: 8080]
+        subgraph Deployments ["Deployments & Pods"]
+            subgraph AppPods ["Spring Boot Pods (HA Replicas)"]
+                Pod1["springboot-app-pod-1 (Port: 8080)"]
+                Pod2["springboot-app-pod-2 (Port: 8080)"]
             end
             
-            subgraph Database & Middleware Pods
-                RedisPod[redis-pod<br>Port: 6379]
-                KafkaPod[kafka-pod<br>Port: 29092]
+            subgraph MiddlewarePods ["Database & Middleware Pods"]
+                RedisPod["redis-pod (Port: 6379)"]
+                KafkaPod["kafka-pod (Port: 29092)"]
             end
         end
 
-        subgraph Configurations
-            Config[springboot-app-config<br>Type: ConfigMap]
+        subgraph Configurations ["Configurations"]
+            Config["springboot-app-config (Type: ConfigMap)"]
         end
     end
 
