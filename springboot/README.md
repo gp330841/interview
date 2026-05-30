@@ -77,6 +77,8 @@ Click on any concept below to explore its directory:
     - Comprehensive guide to building optimized JRE 25 images, multi-stage JAR layering caching, and Zookeeper-less KRaft Kafka + Redis orchestration.
 18. **[Kubernetes Cloud-Native Deployment](KUBERNETES_README.md)** 
     - Declarative K8s manifests (Deployments, Services, ConfigMaps) with deep conceptual guides on G1GC container awareness, Liveness/Readiness probes, and Zero-Downtime Rolling Updates.
+19. **[Micrometer Metrics & Monitoring](src/main/java/springboot/interview/metrics)** 
+    - Covers custom counters, gauges, and timers, high-cardinality risks, and Prometheus/Grafana dashboard setups.
 
 ---
 

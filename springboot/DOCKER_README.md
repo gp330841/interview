@@ -27,8 +27,11 @@ Once the startup logs complete:
    docker compose -f springboot/docker-compose.yml ps
    ```
 2. **Access the endpoints**:
-   - Actuator Health (exposing Redis & Kafka health): `curl -u admin:admin http://localhost:8080/actuator/health`
-   - DI Demo: `curl -u admin:admin http://localhost:8080/api/di/demo`
+   - **Actuator Health**: `curl -u admin:admin http://localhost:8080/actuator/health`
+   - **Prometheus Scrape Raw Metrics**: `curl -u admin:admin http://localhost:8080/actuator/prometheus`
+   - **Prometheus Dashboard**: Open `http://localhost:9090` in your browser. Type `http_server_requests_seconds_count` in the query bar to see real-time API traffic.
+   - **Grafana Dashboard**: Open `http://localhost:3000` (default login: `admin` / `admin`). Under Datasources, add `http://prometheus:9090`. Import default dashboard **12900** or **4701** to view JVM metrics, API error rates, and connection pool statistics in real-time.
+   - **DI Demo**: `curl -u admin:admin http://localhost:8080/api/di/demo`
 
 ---
 

@@ -109,6 +109,10 @@ kubectl apply -f springboot/k8s/kafka.yaml
 
 # 4. Spring Boot Application (exposes LoadBalancer)
 kubectl apply -f springboot/k8s/app.yaml
+
+# 5. Prometheus and Grafana Observability stack
+kubectl apply -f springboot/k8s/prometheus.yaml
+kubectl apply -f springboot/k8s/grafana.yaml
 ```
 
 ### Step 4: Verify Deployment and Access App
@@ -117,11 +121,14 @@ kubectl apply -f springboot/k8s/app.yaml
    kubectl get pods -w
    ```
 2. **Access the application directly**:
-   Because Docker Desktop’s Kubernetes binds `LoadBalancer` services directly to your host's local network card, **no VM port forwarding or minikube bridges are needed!**
-   Simply trigger your local curl/endpoints:
-   ```bash
-   curl -u admin:admin http://localhost:8080/actuator/health
-   ```
+   Because Docker Desktop’s Kubernetes binds `LoadBalancer` services directly to your host's local network card, **no VM port forwarding is needed!**
+   - **Order Processing App**: Open `http://localhost:8080/actuator/health` (login: `admin` / `admin`).
+   - **Grafana Observability Dashboard**: Open `http://localhost:3000` (login: `admin` / `admin`). Under Datasources, add Prometheus with the internal cluster URL: `http://prometheus-service:9090`. Import dashboard **12900** to analyze health, latencies, thread counts, JVM memory usage, database details, and API errors!
+   - **Prometheus Dashboard**: Since it uses ClusterIP internally for security, port-forward to access from your host browser:
+     ```bash
+     kubectl port-forward svc/prometheus-service 9090:9090
+     ```
+     Now open `http://localhost:9090` to inspect raw micrometer metrics.
 
 ---
 
