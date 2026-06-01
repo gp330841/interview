@@ -1,6 +1,7 @@
 package com.interview.javaconcepts.lambdas_streams;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -14,7 +15,22 @@ public class FrequencyCounter {
     private static final List<String> sourceData =
             new ArrayList<>(Arrays.asList("apple", "banana", "apple", "orange", "banana", "apple"));
 
+
     public static void main(String[] args) {
+
+        Map<String, Integer> map = sourceData
+                .stream()
+                .collect(
+                        Collectors.groupingBy(
+                                x->x,
+                                Collectors.reducing(
+                                        x->x,
+                                        Integer::sum
+                                )
+                        )
+                );
+        System.out.println(map);
+
         System.out.println("Source Data: " + sourceData);
 
         // 1. Using collectingAndThen to convert Long to Integer
