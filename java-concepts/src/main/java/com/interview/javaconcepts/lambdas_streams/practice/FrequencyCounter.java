@@ -1,7 +1,6 @@
-package com.interview.javaconcepts.lambdas_streams;
+package com.interview.javaconcepts.lambdas_streams.practice;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -18,13 +17,15 @@ public class FrequencyCounter {
 
     public static void main(String[] args) {
 
+        //my generic solution using reduce/reducing - counting, summing internally uses these
         Map<String, Integer> map = sourceData
                 .stream()
                 .collect(
                         Collectors.groupingBy(
                                 x->x,
                                 Collectors.reducing(
-                                        x->x,
+                                        0,
+                                        x->1,
                                         Integer::sum
                                 )
                         )
