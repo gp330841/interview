@@ -1,33 +1,77 @@
 # SOLID Principles in Object-Oriented Design
 
-SOLID is a set of five design principles to make software designs more understandable, flexible, and maintainable.
+SOLID is a mnemonic acronym for five design principles intended to make software designs more understandable, flexible, and maintainable. These principles form the bedrock of object-oriented design and clean architecture.
 
 ---
 
 ## 1. Single Responsibility Principle (SRP)
-> **Definition:** A class should have one, and only one, reason to change.
+> **Definition:** A class should have one, and only one, reason to change. It means a class should execute a single, tightly-coupled set of actions.
 
-### Bad Design (Violation)
-An `Invoice` class that calculates total, prints invoice, and saves it to a database. If the saving mechanism or printing format changes, the `Invoice` class must change.
+### Real-World Analogy
+Think of a Swiss Army Knife vs. a dedicated screwdriver. A Swiss Army knife does many things, but if you need to change the size of the scissor blade, you might have to redesign the entire handle casing. A dedicated screwdriver has a single purpose; changing its tip does not affect your scissors.
+
+### Violating Design vs. Refactored Design
+Below is a class that violates SRP by handling business calculations, reporting/printing logic, and database persistence inside a single entity.
+
 ```java
+// VIOLATION: Class has three distinct reasons to change (Calculations, Printing, Saving)
 class Invoice {
-    public void calculateTotal() { /* ... */ }
-    public void printInvoice() { /* ... */ }
-    public void saveToDatabase() { /* ... */ }
+    private double amount;
+    private double taxRate;
+
+    public Invoice(double amount, double taxRate) {
+        this.amount = amount;
+        this.taxRate = taxRate;
+    }
+
+    public double calculateTotal() {
+        return amount + (amount * taxRate);
+    }
+
+    public void printInvoice() {
+        System.out.println("Invoice Total: $" + calculateTotal());
+    }
+
+    public void saveToDatabase() {
+        System.out.println("Saving invoice to DB...");
+    }
 }
 ```
 
-### Good Design (SRP Compliant)
-Separate the concerns into distinct classes.
+#### Why it fails:
+If the database schema changes (e.g. migrating from MySQL to MongoDB), the `Invoice` class must be modified. If the printing format changes (e.g. printing HTML instead of Console text), the `Invoice` class must be modified. This couples unrelated subsystems.
+
+#### SRP Compliant Refactoring:
 ```java
+// 1. Domain entity handling business calculations
 class Invoice {
-    public void calculateTotal() { /* ... */ }
+    private final double amount;
+    private final double taxRate;
+
+    public Invoice(double amount, double taxRate) {
+        this.amount = amount;
+        this.taxRate = taxRate;
+    }
+
+    public double getAmount() { return amount; }
+    public double getTaxRate() { return taxRate; }
+    public double calculateTotal() { return amount + (amount * taxRate); }
 }
+
+// 2. Printing subsystem
 class InvoicePrinter {
-    public void print(Invoice invoice) { /* ... */ }
+    public void printToConsole(Invoice invoice) {
+        System.out.println("=== INVOICE DETAILS ===");
+        System.out.println("Subtotal: $" + invoice.getAmount());
+        System.out.println("Total Due: $" + invoice.calculateTotal());
+    }
 }
+
+// 3. Persistence subsystem
 class InvoiceRepository {
-    public void save(Invoice invoice) { /* ... */ }
+    public void save(Invoice invoice) {
+        System.out.println("SQL: INSERT INTO invoices VALUES (" + invoice.calculateTotal() + ");");
+    }
 }
 ```
 
@@ -36,86 +80,98 @@ class InvoiceRepository {
 ## 2. Open-Closed Principle (OCP)
 > **Definition:** Software entities (classes, modules, functions, etc.) should be open for extension, but closed for modification.
 
-### Bad Design (Violation)
-Using conditional statements (`if-else` or `switch`) to handle new types.
-```java
-class DiscountService {
-    public double calculateDiscount(String customerType, double amount) {
-        if (customerType.equals("VIP")) return amount * 0.2;
-        else if (customerType.equals("REGULAR")) return amount * 0.05;
-        return 0;
-    }
-}
-```
-
-### Good Design (OCP Compliant)
-Use polymorphism/interfaces to extend behavior without modifying existing classes.
 ```mermaid
 classDiagram
-    DiscountStrategy <|.. VIPDiscount
-    DiscountStrategy <|.. RegularDiscount
     DiscountService --> DiscountStrategy
+    DiscountStrategy <|.. VIPDiscount
+    DiscountStrategy <|.. StudentDiscount
     class DiscountStrategy {
         <<interface>>
-        +calculateDiscount(double amount) double
+        +calculate(double amount) double
     }
     class VIPDiscount {
-        +calculateDiscount(double amount) double
+        +calculate(double amount) double
     }
-    class RegularDiscount {
-        +calculateDiscount(double amount) double
+    class StudentDiscount {
+        +calculate(double amount) double
     }
 ```
+
+### Code Violation & OCP Compliant Implementation
+Below, we refactor a payment processing engine. The violation uses a switch-case statement, requiring code modification whenever a new payment type is added. The refactored version uses polymorphism.
+
 ```java
-interface DiscountStrategy {
-    double calculateDiscount(double amount);
+// OCP Compliant Design
+
+// 1. Abstraction (Open for extension)
+interface PaymentMethod {
+    void process(double amount);
 }
-class VIPDiscount implements DiscountStrategy {
-    public double calculateDiscount(double amount) { return amount * 0.2; }
+
+// 2. Extensions (Adding new methods requires zero modifications to the core service)
+class CreditCardPayment implements PaymentMethod {
+    public void process(double amount) {
+        System.out.println("Charging $" + amount + " to Credit Card.");
+    }
 }
-class RegularDiscount implements DiscountStrategy {
-    public double calculateDiscount(double amount) { return amount * 0.05; }
+
+class PayPalPayment implements PaymentMethod {
+    public void process(double amount) {
+        System.out.println("Charging $" + amount + " via PayPal account.");
+    }
 }
-class DiscountService {
-    private DiscountStrategy strategy;
-    public DiscountService(DiscountStrategy strategy) { this.strategy = strategy; }
-    public double getDiscount(double amount) { return strategy.calculateDiscount(amount); }
+
+// 3. Core Engine (Closed for modification)
+class PaymentProcessor {
+    public void executePayment(PaymentMethod method, double amount) {
+        // Core engine does not care about concrete classes; it executes the abstraction
+        method.process(amount);
+    }
 }
 ```
 
 ---
 
 ## 3. Liskov Substitution Principle (LSP)
-> **Definition:** Objects of a superclass should be replaceable with objects of its subclasses without breaking the application.
+> **Definition:** Objects of a superclass should be replaceable with objects of its subclasses without breaking the application or altering correctness.
 
-### Bad Design (Violation)
-The classic Square-Rectangle problem. A `Square` inherits from `Rectangle`, but setting width changes height, breaking assumptions in test suites.
-```java
-class Rectangle {
-    protected int width, height;
-    public void setWidth(int w) { this.width = w; }
-    public void setHeight(int h) { this.height = h; }
-}
-class Square extends Rectangle {
-    public void setWidth(int w) { this.width = w; this.height = w; }
-    public void setHeight(int h) { this.width = h; this.height = h; }
-}
+### The Classic Violation: Rectangle & Square
+If a `Square` inherits from `Rectangle`, it inherits the `setWidth` and `setHeight` methods. However, changing a square's width must change its height to maintain square constraints, violating rectangle behavior expectations.
+
+```mermaid
+sequenceDiagram
+    participant TestSuite
+    participant Rectangle
+    TestSuite->>Rectangle: setWidth(10)
+    TestSuite->>Rectangle: setHeight(5)
+    Note over Rectangle: If Rectangle is actually a Square, both width and height become 5!
+    TestSuite->>Rectangle: assert(getArea() == 50)
+    Note over TestSuite: Assert fails! (Area is 25)
 ```
 
-### Good Design (LSP Compliant)
-Inheritance must represent true substitutions. If behaviors differ fundamentally, inherit from a common minimal abstraction or use composition.
+### LSP Compliant Refactoring
+If a subclass cannot fulfill the behavior contracts of its parent class, they must not share a direct inheritance tree. Instead, use a common minimal interface or composition.
+
 ```java
 interface Shape {
     int getArea();
 }
+
 class Rectangle implements Shape {
-    private int width, height;
+    private int width;
+    private int height;
+
     public Rectangle(int w, int h) { this.width = w; this.height = h; }
+    public void setWidth(int w) { this.width = w; }
+    public void setHeight(int h) { this.height = h; }
     public int getArea() { return width * height; }
 }
+
 class Square implements Shape {
     private int side;
-    public Square(int s) { this.side = s; }
+
+    public Square(int side) { this.side = side; }
+    public void setSide(int s) { this.side = s; }
     public int getArea() { return side * side; }
 }
 ```
@@ -123,37 +179,30 @@ class Square implements Shape {
 ---
 
 ## 4. Interface Segregation Principle (ISP)
-> **Definition:** Clients should not be forced to depend on methods they do not use.
+> **Definition:** Clients should not be forced to depend on methods they do not use. Split fat interfaces into smaller, cohesive ones.
 
-### Bad Design (Violation)
-A single fat interface for all device operations.
+### Code Violation & Refactoring
 ```java
-interface MultiFunctionDevice {
+// VIOLATION: Fat interface forces simple printers to implement scanner/fax methods
+interface IMachine {
     void print();
     void scan();
     void fax();
 }
-class SimplePrinter implements MultiFunctionDevice {
-    public void print() { /* OK */ }
-    public void scan() { throw new UnsupportedOperationException(); } // Violation
-    public void fax() { throw new UnsupportedOperationException(); }  // Violation
-}
-```
 
-### Good Design (ISP Compliant)
-Split the fat interface into smaller, focused interfaces.
-```java
+// REFACTORING: Highly cohesive interfaces
 interface Printer { void print(); }
 interface Scanner { void scan(); }
-interface FaxMachine { void fax(); }
+interface Fax { void fax(); }
 
-class SimplePrinter implements Printer {
-    public void print() { /* print logic */ }
+class BasicPrinter implements Printer {
+    public void print() { System.out.println("Printing document..."); }
 }
-class SuperPrinter implements Printer, Scanner, FaxMachine {
-    public void print() {}
-    public void scan() {}
-    public void fax() {}
+
+class AllInOneOfficePrinter implements Printer, Scanner, Fax {
+    public void print() { System.out.println("Printing..."); }
+    public void scan() { System.out.println("Scanning..."); }
+    public void fax() { System.out.println("Faxing..."); }
 }
 ```
 
@@ -162,55 +211,74 @@ class SuperPrinter implements Printer, Scanner, FaxMachine {
 ## 5. Dependency Inversion Principle (DIP)
 > **Definition:** High-level modules should not depend on low-level modules. Both should depend on abstractions. Abstractions should not depend on details. Details should depend on abstractions.
 
-### Bad Design (Violation)
-`Car` directly depends on a concrete `Engine` implementation.
-```java
-class PetrolEngine {
-    public void start() {}
-}
-class Car {
-    private PetrolEngine engine = new PetrolEngine(); // Tight coupling
-    public void drive() { engine.start(); }
-}
-```
-
-### Good Design (DIP Compliant)
-Decouple using an interface.
 ```mermaid
 classDiagram
-    Car --> Engine
-    Engine <|.. PetrolEngine
-    Engine <|.. ElectricEngine
-    class Engine {
+    NotificationService --> MessageSender
+    MessageSender <|.. EmailSender
+    MessageSender <|.. SMSSender
+    class MessageSender {
         <<interface>>
-        +start() void
-    }
-    class PetrolEngine {
-        +start() void
-    }
-    class ElectricEngine {
-        +start() void
+        +send(String msg) void
     }
 ```
-```java
-interface Engine { void start(); }
-class PetrolEngine implements Engine { public void start() {} }
-class ElectricEngine implements Engine { public void start() {} }
 
-class Car {
-    private Engine engine;
-    public Car(Engine engine) { this.engine = engine; } // Dependency Injection
-    public void drive() { engine.start(); }
+### DIP Compliant Implementation
+```java
+interface MessageSender {
+    void send(String msg);
+}
+
+class EmailSender implements MessageSender {
+    public void send(String msg) { System.out.println("Email: " + msg); }
+}
+
+class SMSSender implements MessageSender {
+    public void send(String msg) { System.out.println("SMS: " + msg); }
+}
+
+// High-level module depends on abstraction (MessageSender), not concrete details (EmailSender)
+class NotificationService {
+    private final MessageSender sender;
+
+    // Dependency Injection (Constructor Injection)
+    public NotificationService(MessageSender sender) {
+        this.sender = sender;
+    }
+
+    public void alertUser(String alarm) {
+        sender.send("ALARM: " + alarm);
+    }
 }
 ```
 
 ---
 
-## Interview Q&A Corner
+## 6. Edge Cases & Architectural Pitfalls
 
-> [!TIP]
-> **Q: How does OCP relate to design patterns?**
-> A: Patterns like **Strategy**, **Decorator**, and **State** are primarily designed to help systems adhere to OCP by allowing you to add new behaviors (strategies, states, wrappers) without modifying the base execution logic.
->
-> **Q: What is the main difference between LSP and polymorphism?**
-> A: Polymorphism is a language feature (how inheritance works), whereas LSP is a semantic rule for designing hierarchies. LSP dictates that subclass overrides must preserve the behavior contracts expected of the parent class (e.g. not throwing `UnsupportedOperationException`).
+> [!WARNING]
+> * **Over-Engineering (SRP/ISP Trap):** Breaking down interfaces and classes too far leads to "class explosion," making the code hard to navigate. Apply SRP pragmatically when classes actually have multiple distinct stakeholders.
+> * **Premature Generalization (OCP Trap):** Making every class open for extension using interfaces before understanding actual system requirements increases complexity without benefit. Follow the *Rule of Three*: refactor to OCP only when adding a concrete variation for the third time.
+
+---
+
+## 7. Detailed Interview Q&A
+
+### Q1: What is the differences between Dependency Inversion (DIP), Dependency Injection (DI), and Inversion of Control (IoC)?
+* **DIP:** A design *principle* recommending that high-level policies should not depend on low-level implementation details.
+* **DI:** A design *pattern* for passing dependencies into a class (e.g., Constructor, Setter, or Field Injection) rather than letting the class instantiate them.
+* **IoC:** A programming *style* where the control flow of the program is inverted. Instead of your code calling a framework library, a framework container (like Spring) controls program lifecycle and calls your code.
+
+### Q2: How does violating LSP break polymorphic code correctness?
+LSP guarantees that you can pass any subclass to a client method expecting the superclass without altering correctness. If a subclass method overrides the superclass but behaves unexpectedly (e.g. throws `UnsupportedOperationException`, relaxes precondition checks, or tightens postconditions), the client code will fail unexpectedly at runtime, rendering polymorphism unreliable.
+
+### Q3: Why is OCP often described as the most critical SOLID principle?
+OCP allows systems to grow safely. By structuring code such that new features are added by creating *new* classes (extensions) rather than modifying *existing* code, you minimize the surface area of regression bugs. Existing unit tests remain green because the code they test has not been touched.
+
+### Q4: Can you explain the relation between SRP and high cohesion?
+Cohesion measures how closely related the functions inside a class are. SRP mandates that a class should do a single logical thing, which naturally leads to highly cohesive classes. Highly cohesive, single-responsibility code is easier to unit test, reuse, and debug.
+
+### Q5: How do we fix a legacy codebase that violates DIP?
+1. Identify high-level classes that directly instantiate low-level utility classes (`new LowLevelService()`).
+2. Extract an interface from the low-level utility class.
+3. Modify the high-level class constructor to accept this interface as an argument.
+4. Leverage a Dependency Injection container (or manually build dependencies inside a main class/factory) to wire them together.
