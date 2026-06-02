@@ -16,12 +16,12 @@ Content Delivery Networks (CDNs) are globally distributed networks of proxy serv
   $$\text{Data Volume} = 10,000,000 \times 200 \text{ KB} = 2,000,000,000 \text{ KB} = 2,000 \text{ GB} = 2 \text{ TB/day}$$
 * **Monthly Egress Volume:** $2 \text{ TB/day} \times 30 \text{ days} = 60 \text{ TB/month}$.
 * **AWS Data Transfer Egress Cost:** $\approx \$0.08$ per GB.
-  $$\text{Cost}_{\text{no\_cdn}} = 60,000 \text{ GB} \times \$0.08 = \$4,800\text{/month}$$
+  $$\text{Cost}_{\text{no-cdn}} = 60,000 \text{ GB} \times \$0.08 = \$4,800\text{/month}$$
 
 ##### Cost Sizing with CDN (99% Cache Hit Ratio):
 * When a CDN caches the images, $99\%$ of requests are served directly from the CDN edge cache. Only $1\%$ of requests (cache misses) reach the origin server.
 * **Monthly Origin Egress Volume:**
-  $$\text{Volume}_{\text{origin\_miss}} = 60 \text{ TB} \times 0.01 = 0.6 \text{ TB} = 600 \text{ GB/month}$$
+  $$\text{Volume}_{\text{origin-miss}} = 60 \text{ TB} \times 0.01 = 0.6 \text{ TB} = 600 \text{ GB/month}$$
 * **Monthly Origin Data Transfer Cost:**
   $$\text{Cost}_{\text{origin}} = 600 \text{ GB} \times \$0.08 = \$48\text{/month}$$
 * **Monthly CDN Cost** (CDN egress rate $\approx \$0.015$ per GB):
@@ -32,9 +32,9 @@ Content Delivery Networks (CDNs) are globally distributed networks of proxy serv
 ##### Latency Analysis for Tokyo Users:
 * Network Round-Trip Time (RTT) from Tokyo to Virginia $\approx 160 \text{ ms}$.
 * For an HTTPS request (TCP Handshake + TLS Client Hello + HTTP GET):
-  $$\text{Latency}_{\text{no\_cdn}} = 3 \times \text{RTT} = 3 \times 160 \text{ ms} = 480 \text{ ms}$$
+  $$\text{Latency}_{\text{no-cdn}} = 3 \times \text{RTT} = 3 \times 160 \text{ ms} = 480 \text{ ms}$$
 * Latency to Tokyo Edge PoP: RTT $\approx 15 \text{ ms}$.
-  $$\text{Latency}_{\text{with\_cdn}} = 3 \times \text{RTT} = 3 \times 15 \text{ ms} = 45 \text{ ms}$$
+  $$\text{Latency}_{\text{with-cdn}} = 3 \times \text{RTT} = 3 \times 15 \text{ ms} = 45 \text{ ms}$$
 * **Performance Gain:** $90.6\%$ reduction in latency for Tokyo users.
 
 ---

@@ -218,10 +218,10 @@ While horizontal scaling enables high availability, it introduces several archit
 Let $p$ be the probability of a single downstream service call experiencing a latency spike ($p = 1\% = 0.01$). The probability of a successful request completing without any spikes is $1 - p = 0.99$.
 
 If a user request queries $N = 50$ downstream services in parallel, the probability that *all* 50 calls complete without a spike is:
-$$P_{\text{no\_spike}} = (1 - p)^N = 0.99^{50} \approx 0.605 \ (60.5\%)$$
+$$P_{\text{no-spike}} = (1 - p)^N = 0.99^{50} \approx 0.605 \ (60.5\%)$$
 
 The probability of at least one downstream call experiencing a latency spike ($P_{\text{spike}}$), which delays the entire user request, is:
-$$P_{\text{spike}} = 1 - P_{\text{no\_spike}} = 1 - 0.605 = 0.395 \ (39.5\%)$$
+$$P_{\text{spike}} = 1 - P_{\text{no-spike}} = 1 - 0.605 = 0.395 \ (39.5\%)$$
 
 *Conclusion:* Despite every individual service being healthy ($99\%$ fast request rate), approximately $40\%$ of all user requests will experience a latency spike. This highlights why tail latency mitigation is critical in microservice environments.
 

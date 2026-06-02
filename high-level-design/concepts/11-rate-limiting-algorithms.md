@@ -20,7 +20,7 @@ Rate limiting restricts the volume of requests a client can make to an API withi
 
 * **Sliding Window Counter (Window Approximator):**
   This algorithm tracks only the request counts for the current window and the previous window, approximating the rate:
-  $$\text{Request Count} = \text{Count}_{\text{prev\_window}} \times \left(1 - \frac{t_{\text{elapsed}}}{\text{WindowSize}}\right) + \text{Count}_{\text{curr\_window}}$$
+  $$\text{Request Count} = \text{Count}_{\text{prev-window}} \times \left(1 - \frac{t_{\text{elapsed}}}{\text{WindowSize}}\right) + \text{Count}_{\text{curr-window}}$$
   * Data stored: Two integers (4 bytes each) and one timestamp for the start of the window (8 bytes).
   * Total state size per user: $16 \text{ bytes}$ ($\approx 32 \text{ bytes}$ with Redis keys).
   * Total memory for 1 million active users:

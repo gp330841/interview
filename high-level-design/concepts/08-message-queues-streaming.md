@@ -17,8 +17,8 @@ Message queues and event streaming systems decouple producers and consumers, ena
 * **Calculations:**
   * **Daily Event Count ($E_{day}$):**
     $$E_{day} = 10,000,000 \times 50 = 500,000,000 \text{ events/day}$$
-  * **Daily Raw Storage ($S_{raw\_day}$):**
-    $$S_{raw\_day} = 500,000,000 \times 1.2 \text{ KB} = 600,000,000 \text{ KB} \approx 600 \text{ GB/day}$$
+  * **Daily Raw Storage ($S_{raw-day}$):**
+    $$S_{raw-day} = 500,000,000 \times 1.2 \text{ KB} = 600,000,000 \text{ KB} \approx 600 \text{ GB/day}$$
   * **Total Storage Sizing (7 days retention + 3x replication + 20% system margin):**
     $$S_{total} = (600 \text{ GB/day} \times 7 \text{ days}) \times 3 \times 1.20 = 15,120 \text{ GB} \approx 15.1 \text{ TB}$$
   * **Network/Disk Write Bandwidth (Average and Peak):**

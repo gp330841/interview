@@ -29,7 +29,7 @@ API protocols govern the structure, transport, and serialization of data exchang
     * Timestamp is encoded as a varint (average 6 bytes).
     * Field tags and lengths add $\approx 5$ bytes overhead.
     * Average size per record in Protobuf format:
-      $$\text{Size}_{\text{record\_proto}} = \text{Order ID} (16) + \text{User ID} (16) + \text{Price} (8) + \text{Status} (1) + \text{Time} (6) + \text{Tags} (5) = 52 \text{ bytes}$$
+      $$\text{Size}_{\text{record-proto}} = \text{Order ID} (16) + \text{User ID} (16) + \text{Price} (8) + \text{Status} (1) + \text{Time} (6) + \text{Tags} (5) = 52 \text{ bytes}$$
     * Total payload size for 1,000 records:
       $$\text{Size}_{\text{proto}} = 1,000 \times 52 \text{ bytes} \approx 52 \text{ KB}$$
   * **Analysis:** Protobuf reduces the payload size by $76.3\%$. Additionally, parsing binary Protobuf requires up to $10\times$ less CPU time than parsing text-based JSON, as it avoids regex-like string parsing.

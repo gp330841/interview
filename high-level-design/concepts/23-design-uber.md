@@ -271,7 +271,7 @@ Managing 1 Million concurrent WebSocket connections requires optimization at the
 3.  **Preventing Reconnection Storms (Thundering Herd):**
     *   If a WebSocket server crashes, thousands of clients will attempt to reconnect simultaneously. This can overload the remaining servers.
     *   *Mitigation:* Configure client applications to use **Exponential Backoff with Jitter** for reconnections. This introduces a random delay to spread out reconnection requests over time:
-        $$\text{Retry Delay} = 2^{\text{attempt}} \times 1\text{ second} + \text{random\_jitter}$$
+        $$\text{Retry Delay} = 2^{\text{attempt}} \times 1\text{ second} + \text{random-jitter}$$
 
 ---
 

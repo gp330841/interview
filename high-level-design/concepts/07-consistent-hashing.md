@@ -187,7 +187,7 @@ When Node D is added to a cluster of nodes A, B, and C:
 ### Mitigation of Skew and Hotspots
 If a physical node has higher hardware specifications (e.g. $2\times$ RAM/CPU), we can scale its participation proportionally.
 * **Weighted VNodes:** Instead of a fixed replica count, we assign VNodes based on weight:
-  $$V_{\text{node\_id}} = \text{BaseReplicas} \times \text{CapacityWeight}$$
+  $$V_{\text{node-id}} = \text{BaseReplicas} \times \text{CapacityWeight}$$
   A server with $64\text{GB}$ RAM gets $200$ VNodes, while a server with $32\text{GB}$ RAM gets $100$ VNodes. This ensures that the high-capacity server owns double the address space on the ring.
 
 ### Cascade Failover Prevention (Replica Rings)

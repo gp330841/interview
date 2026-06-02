@@ -219,7 +219,7 @@ Index mappings define how fields are analyzed and stored. This configuration def
 ```
 
 1.  **Ingestion & Shard Calculation:** The Client sends a document write request to a Coordinating node. The Coordinating node computes the target shard ID:
-    $$\text{Shard ID} = \text{hash}(\text{routing\_key}) \pmod{\text{number\_of\_primary\_shards}}$$
+    $$\text{Shard ID} = \text{hash}(\text{routing-key}) \pmod{\text{number-of-primary-shards}}$$
 2.  **Routing to Primary:** The Coordinating node routes the document to the Data node hosting the designated **Primary Shard**.
 3.  **Local Indexing & Logging:** The Primary shard writes the document to the memory index buffer and appends the raw operation to the write-ahead **Translog** for durability.
 4.  **Replication Broadcast:** The Primary shard sends the raw operations to all active **Replica Shards** in parallel.
@@ -268,7 +268,7 @@ A Lucene index consists of one or more immutable files called **Segments**.
 ### Q2: Why is the number of primary shards immutable in Elasticsearch? How does the Split API work?
 **Answer:**
 The number of primary shards cannot be changed because Elasticsearch routes documents using modulo arithmetic:
-$$\text{Shard ID} = \text{hash}(\text{routing\_key}) \pmod{\text{number\_of\_primary\_shards}}$$
+$$\text{Shard ID} = \text{hash}(\text{routing-key}) \pmod{\text{number-of-primary-shards}}$$
 If the shard count changes, the routing formula yields different shard IDs for existing documents, making them unsearchable.
 
 To scale an index without losing data:
