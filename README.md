@@ -10,13 +10,13 @@ Explore the deep-dive directories below for targeted interview preparation:
 
 | Topic | Guide | Key Focus / Highlights |
 | :--- | :--- | :--- |
-| **System Design** | [High Level Design (HLD)](file:///Users/yogeshwarpatel/Workspace/interview/high-level-design/README.md) | Scalability, Load Balancers, Sharding, CAP/PACELC, Real-world cases (Twitter, Uber, Netflix). |
-| **Object-Oriented Design** | [Low Level Design (LLD)](file:///Users/yogeshwarpatel/Workspace/interview/low-level-design/README.md) | Design Patterns, Clean Code principles, SOLID, and class structure diagrams. |
-| **Cloud Computing** | [AWS Cloud Guide](file:///Users/yogeshwarpatel/Workspace/interview/aws-cloud/README.md) | Networking, Compute, Storage, Security, Serverless, Integration, and Scenario Questions. |
-| **Databases** | [Database Systems](file:///Users/yogeshwarpatel/Workspace/interview/database/README.md) | SQL (MySQL) vs NoSQL (MongoDB), wired-tiger internals, indexing, MVCC, and replication. |
-| **Backend Frameworks** | [Spring Boot & Devops](file:///Users/yogeshwarpatel/Workspace/interview/springboot/README.md) | Spring MVC/Boot internals, Docker containment, Kubernetes orchestration configs. |
-| **Core Language** | [Java Concepts](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/README.md) | Concurrency, JVM/GC tuning, Collections framework internals, Lambdas, and serialization. |
-| **Artificial Intelligence** | [Artificial Intelligence (AI)](file:///Users/yogeshwarpatel/Workspace/interview/ai/README.md) | Generative AI, Java/Python LLM integration, prompt engineering, and agent systems. |
+| **System Design** | [High Level Design (HLD)](high-level-design/README.md) | Scalability, Load Balancers, Sharding, CAP/PACELC, Real-world cases (Twitter, Uber, Netflix). |
+| **Object-Oriented Design** | [Low Level Design (LLD)](low-level-design/README.md) | Design Patterns, Clean Code principles, SOLID, and class structure diagrams. |
+| **Cloud Computing** | [AWS Cloud Guide](aws-cloud/README.md) | Networking, Compute, Storage, Security, Serverless, Integration, and Scenario Questions. |
+| **Databases** | [Database Systems](database/README.md) | SQL (MySQL) vs NoSQL (MongoDB), wired-tiger internals, indexing, MVCC, and replication. |
+| **Backend Frameworks** | [Spring Boot & Devops](springboot/README.md) | Spring MVC/Boot internals, Docker containment, Kubernetes orchestration configs. |
+| **Core Language** | [Java Concepts](java-concepts/README.md) | Concurrency, JVM/GC tuning, Collections framework internals, Lambdas, and serialization. |
+| **Artificial Intelligence** | [Artificial Intelligence (AI)](ai/README.md) | Generative AI, Java/Python LLM integration, prompt engineering, and agent systems. |
 
 ---
 

@@ -361,3 +361,12 @@ public class RedisChatMemoryStore implements ChatMemoryStore {
 | **Model Auto-Configurations** | Manual bean configuration or simple property injection. | Native Spring Boot auto-configuration bindings matching application properties. |
 | **Function Calling API** | Standard Java classes with simple `@Tool` annotations. | Uses Java `Function<Request, Response>` interface bindings configured via `@Bean` registries. |
 | **Ecosystem Maturity** | Highly mature, wide array of document loaders and vector store integrations. | Rapidly expanding, supported by VMware core Spring development teams. |
+
+---
+
+## 7. Hands-on Project Modules (Directory Map)
+
+To learn these concepts in practice, explore the following sub-projects:
+
+*   **[Java AI Module (Spring AI & LangChain4j)](gen-ai-java/README.md):** Features Spring Boot configuration, ChatClient message memory advisors, LangChain4j dynamic proxies, custom reflection tool bindings, step-by-step RAG ingestion pipelines, and a custom JVM state graph chatbot.
+*   **[Python AI Module (LangGraph)](gen-ai-python/README.md):** Features a LangGraph cyclic state graph chatbot with memory checkpointers, tool routing, and streaming command-line execution interfaces.
