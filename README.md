@@ -1,8 +1,28 @@
-# Interview Problems
+# Technical Interview Preparation Portal
 
-This repository is for storing problems and solutions encountered during interviews.  
-Most solutions are data structures and algorithms (DSA) problems in Java, but there may be text files with explanations, problem statements, or non-coding responses.
+This repository serves as a centralized hub for engineering and architecture interview preparation, containing coding solutions, deep-dive architectural guides, systems engineering notes, and hands-on designs.
 
-## Structure
-- problems/java/ contains Java solutions to DSA problems.
-- problems/text/ contains problem statements, notes, or textual explanations.
+---
+
+## 📚 Study Guides & Topic Dashboards
+
+Explore the deep-dive directories below for targeted interview preparation:
+
+| Topic | Guide | Key Focus / Highlights |
+| :--- | :--- | :--- |
+| **System Design** | [High Level Design (HLD)](file:///Users/yogeshwarpatel/Workspace/interview/high-level-design/README.md) | Scalability, Load Balancers, Sharding, CAP/PACELC, Real-world cases (Twitter, Uber, Netflix). |
+| **Object-Oriented Design** | [Low Level Design (LLD)](file:///Users/yogeshwarpatel/Workspace/interview/low-level-design/README.md) | Design Patterns, Clean Code principles, SOLID, and class structure diagrams. |
+| **Cloud Computing** | [AWS Cloud Guide](file:///Users/yogeshwarpatel/Workspace/interview/aws-cloud/README.md) | Networking, Compute, Storage, Security, Serverless, Integration, and Scenario Questions. |
+| **Databases** | [Database Systems](file:///Users/yogeshwarpatel/Workspace/interview/database/README.md) | SQL (MySQL) vs NoSQL (MongoDB), wired-tiger internals, indexing, MVCC, and replication. |
+| **Backend Frameworks** | [Spring Boot & Devops](file:///Users/yogeshwarpatel/Workspace/interview/springboot/README.md) | Spring MVC/Boot internals, Docker containment, Kubernetes orchestration configs. |
+| **Core Language** | [Java Concepts](file:///Users/yogeshwarpatel/Workspace/interview/java-concepts/README.md) | Concurrency, JVM/GC tuning, Collections framework internals, Lambdas, and serialization. |
+| **Artificial Intelligence** | [Artificial Intelligence (AI)](file:///Users/yogeshwarpatel/Workspace/interview/ai/README.md) | Generative AI, Java/Python LLM integration, prompt engineering, and agent systems. |
+
+---
+
+## 📁 Repository Structure
+
+*   `codingInInterview/` - Core DSA solutions, coding challenges, and problem-solving logs.
+*   `problems/java/` - Java-based implementations for standard data structures and algorithmic problems.
+*   `problems/text/` - Textual notes, explanations, and non-coding responses to interview questions.
+
