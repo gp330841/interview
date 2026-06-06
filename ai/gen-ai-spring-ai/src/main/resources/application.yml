@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: gen-ai-spring-ai
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:demo}
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.0
+
+server:
+  port: 8081

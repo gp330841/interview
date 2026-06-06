@@ -19,10 +19,6 @@ public class CompiledGraph<T> {
         this.entryPoint = entryPoint;
     }
 
-    /**
-     * Loops through nodes in the state graph, modifying the state at each step,
-     * until the termination state ("__end__") is hit.
-     */
     public T execute(T initialState) {
         String currentNode = entryPoint;
         T state = initialState;
@@ -35,10 +31,8 @@ public class CompiledGraph<T> {
                 throw new IllegalStateException("Node not registered: " + currentNode);
             }
             
-            // Execute compute step on current node
             state = node.apply(state);
 
-            // Determine next node: check conditional edges first, then fall back to standard edges
             if (conditionalEdges.containsKey(currentNode)) {
                 currentNode = conditionalEdges.get(currentNode).apply(state);
             } else {

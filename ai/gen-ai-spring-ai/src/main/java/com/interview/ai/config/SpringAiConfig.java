@@ -23,16 +23,12 @@ public class SpringAiConfig {
 
     @Bean
     public ChatClient springAiChatClient(ChatModel chatModel) {
-        // Fluent ChatClient with conversation memory tracking
         return ChatClient.builder(chatModel)
                 .defaultSystem("You are a helpful Spring AI assistant.")
                 .defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory()))
                 .build();
     }
 
-    /**
-     * Condition that checks if the OpenAI API Key is missing, blank, or equal to 'demo'.
-     */
     public static class MockModelCondition implements Condition {
         @Override
         public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -41,9 +37,6 @@ public class SpringAiConfig {
         }
     }
 
-    /**
-     * Instantiates a mock ChatModel if no API key is specified, preventing boot-up errors.
-     */
     @Bean
     @Conditional(MockModelCondition.class)
     @Primary

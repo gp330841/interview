@@ -7,8 +7,6 @@ import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.TokenWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.request.ChatRequest;
-import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiTokenizer;
 import dev.langchain4j.model.output.Response;
@@ -45,7 +43,6 @@ public class LangChain4jConfig {
 
                 @Override
                 public Response<AiMessage> generate(List<ChatMessage> messages, List<dev.langchain4j.agent.tool.ToolSpecification> toolSpecifications) {
-                    // Fallback to simple generate if tool calling is triggered in mock mode
                     return generate(messages);
                 }
             };
@@ -60,13 +57,11 @@ public class LangChain4jConfig {
 
     @Bean
     public ChatMemory chatMemory() {
-        // Keeps track of conversation history in memory, limiting it to a window of tokens
         return TokenWindowChatMemory.withMaxTokens(1000, new OpenAiTokenizer("gpt-4o-mini"));
     }
 
     @Bean
     public CustomerSupportAgent customerSupportAgent(ChatLanguageModel chatLanguageModel, ChatMemory chatMemory, BookingTools bookingTools) {
-        // High-level declarative service bridging the LLM model, the memory window, and tools
         return AiServices.builder(CustomerSupportAgent.class)
                 .chatLanguageModel(chatLanguageModel)
                 .chatMemory(chatMemory)

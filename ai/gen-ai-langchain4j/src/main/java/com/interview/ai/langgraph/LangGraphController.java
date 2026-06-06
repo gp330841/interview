@@ -17,7 +17,7 @@ public class LangGraphController {
 
     /**
      * Endpoint to chat with the custom state-graph agent, passing a sessionId for memory/history.
-     * http://localhost:8080/api/ai/langgraph/chat?sessionId=session-123&message=Is flight LH123 delayed?
+     * http://localhost:8082/api/ai/langgraph/chat?sessionId=session-123&message=Is flight LH123 delayed?
      */
     @GetMapping("/chat")
     public String chat(@RequestParam("sessionId") String sessionId,

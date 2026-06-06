@@ -368,5 +368,6 @@ public class RedisChatMemoryStore implements ChatMemoryStore {
 
 To learn these concepts in practice, explore the following sub-projects:
 
-*   **[Java AI Module (Spring AI & LangChain4j)](gen-ai-java/README.md):** Features Spring Boot configuration, ChatClient message memory advisors, LangChain4j dynamic proxies, custom reflection tool bindings, step-by-step RAG ingestion pipelines, and a custom JVM state graph chatbot.
+*   **[Java Spring AI Module (gen-ai-spring-ai)](gen-ai-spring-ai/README.md):** Features Spring Boot configuration, ChatClient message memory advisors, and mock fallbacks on port 8081.
+*   **[Java LangChain4j & Custom State Graph Module (gen-ai-langchain4j)](gen-ai-langchain4j/README.md):** Features LangChain4j dynamic proxies, custom reflection tool bindings, step-by-step RAG ingestion pipelines, and the custom JVM state graph chatbot on port 8082.
 *   **[Python AI Module (LangGraph)](gen-ai-python/README.md):** Features a LangGraph cyclic state graph chatbot with memory checkpointers, tool routing, and streaming command-line execution interfaces.

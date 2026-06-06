@@ -1,17 +1,9 @@
 spring:
   application:
-    name: gen-ai-java
-  ai:
-    openai:
-      # Spring AI OpenAI configuration
-      api-key: ${OPENAI_API_KEY:demo}
-      chat:
-        options:
-          model: gpt-4o-mini
-          temperature: 0.0
+    name: gen-ai-langchain4j
 
 server:
-  port: 8080
+  port: 8082
 
 # Custom property for LangChain4j model configuration (which reads from same env var)
 openai:
@@ -21,4 +13,4 @@ openai:
 langchain:
   tracing-v2: ${LANGCHAIN_TRACING_V2:false}
   api-key: ${LANGCHAIN_API_KEY:}
-  project: ${LANGCHAIN_PROJECT:gen-ai-java-learning}
+  project: ${LANGCHAIN_PROJECT:gen-ai-langchain4j-learning}

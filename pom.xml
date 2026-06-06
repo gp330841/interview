@@ -14,7 +14,8 @@
         <module>systemDesign</module>
         <module>codingInInterview</module>
         <module>springboot</module>
-        <module>ai/gen-ai-java</module>
+        <module>ai/gen-ai-spring-ai</module>
+        <module>ai/gen-ai-langchain4j</module>
     </modules>
 
     <properties>

@@ -41,7 +41,6 @@ public class SimpleRagService {
 
     @PostConstruct
     public void init() throws IOException {
-        // 1. Initialize In-Memory Vector Store and Embedding Model
         boolean isMock = apiKey == null || apiKey.trim().isEmpty() || apiKey.equals("demo");
         
         if (isMock) {
@@ -74,15 +73,12 @@ public class SimpleRagService {
         
         this.embeddingStore = new InMemoryEmbeddingStore<>();
 
-        // 2. Load the Knowledge Base Document
         String text = new String(faqResource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         Document document = Document.from(text);
 
-        // 3. Chunk the Document into smaller segments (150 chars overlap of 30)
         DocumentSplitter splitter = DocumentSplitters.recursive(150, 30);
         List<TextSegment> segments = splitter.split(document);
 
-        // 4. Generate Embeddings and Store Chunks in the Vector Database
         for (TextSegment segment : segments) {
             Embedding embedding = embeddingModel.embed(segment).content();
             embeddingStore.add(embedding, segment);
@@ -90,25 +86,15 @@ public class SimpleRagService {
         System.out.println(">>> RAG Pipeline Ingestion Complete. Ingested " + segments.size() + " document chunks.");
     }
 
-    /**
-     * Executes RAG: retrieves matching context vectors, builds custom prompt context, and queries the LLM.
-     */
     public String query(String question) {
         boolean isMock = apiKey == null || apiKey.trim().isEmpty() || apiKey.equals("demo");
-        
         String contextText;
 
         if (isMock) {
-            // Mock matching based on simple text lookup to guarantee functional response out of the box
             contextText = retrieveMockContext(question);
         } else {
-            // A. Embed the incoming user question
             Embedding questionEmbedding = embeddingModel.embed(question).content();
-
-            // B. Find Top-2 nearest neighbor vector matches in the database
             List<EmbeddingMatch<TextSegment>> relevantMatches = embeddingStore.findRelevant(questionEmbedding, 2);
-
-            // C. Combine matches into a single context string
             StringBuilder contextBuilder = new StringBuilder();
             for (EmbeddingMatch<TextSegment> match : relevantMatches) {
                 contextBuilder.append(match.embedded().text()).append("\n\n");
@@ -116,7 +102,6 @@ public class SimpleRagService {
             contextText = contextBuilder.toString();
         }
 
-        // D. Build the final context-grounded Prompt
         String prompt = "You are a customer support representative. Answer the user's question based strictly on the provided context. " +
                 "If the answer is not found in the context, politely say that you do not know.\n\n" +
                 "=== CONTEXT ===\n" +
@@ -125,7 +110,6 @@ public class SimpleRagService {
                 "QUESTION: " + question + "\n" +
                 "ANSWER:";
 
-        // E. Generate response from the LLM model
         return chatLanguageModel.generate(prompt);
     }
 

@@ -12,7 +12,6 @@ public class BookingTools {
     private final Map<String, String> bookingStore = new ConcurrentHashMap<>();
 
     public BookingTools() {
-        // Mock DB records for testing tool executions
         bookingStore.put("LH123", "DELAYED (expected delay: 2 hours due to weather)");
         bookingStore.put("UA456", "ON TIME (boarding starts at Gate B2)");
         bookingStore.put("EK789", "CANCELLED (re-routing passengers to next flight)");
