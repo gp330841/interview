@@ -47,7 +47,61 @@ If a query does not include the sharding key, the query coordinator must query a
 
 ---
 
-## 2. Visual Architecture Diagram
+## 2. Core Sharding Mechanics & Key Selection
+
+### A. How to Choose a Sharding Key
+A sharding key is the database column (or combination of columns) used to determine the partition routing for each row. Choosing the wrong sharding key is the most expensive mistake in database design, as changing it later requires a complete cluster migration and rewrite of routing logic.
+
+#### Key Selection Parameters:
+1. **Cardinality:**
+   * **Definition:** The number of unique values in the column.
+   * **Rule:** Use a key with high cardinality. 
+   * *Example:* Sharding by `Gender` (cardinality = 2) is extremely bad, as you can only ever scale to 2 shards. Sharding by `User_ID` (cardinality = millions) allows arbitrary horizontal scale.
+2. **Frequency / Data Distribution:**
+   * **Definition:** The frequency of write/read operations hitting specific keys.
+   * **Rule:** Choose keys that prevent data skew and hotspots.
+   * *Example:* If you shard an order table by `Created_Date`, all writes for the current day will hit the same shard, overloading it (write hotspot), while older shards sit idle.
+3. **Query Access Patterns:**
+   * **Rule:** Align the sharding key with your primary query filters (`WHERE` clauses).
+   * *Example:* If $95\%$ of read queries seek info using `Tenant_ID`, sharding by `Tenant_ID` ensures that $95\%$ of requests are single-shard routed queries.
+
+---
+
+### B. Query Aggregation Mechanics (Scatter-Gather)
+When a query does not target the sharding key, it is intercepted by a routing proxy or coordinator node which executes **Scatter-Gather**.
+
+#### 1. How the Routing Proxy Aggregates Query Functions:
+* **SUM / COUNT:** The proxy queries all shards in parallel for local sums/counts, retrieves the values, and sums them up globally.
+  $$\text{Global Count} = \sum_{i=1}^N \text{Local Count}_i$$
+* **MIN / MAX:** The proxy queries all shards in parallel for their local `MIN` or `MAX`, and then computes the global minimum or maximum from the returned subset:
+  $$\text{Global Min} = \min(\text{Local Min}_1, \text{Local Min}_2, \dots, \text{Local Min}_N)$$
+* **AVERAGE (AVG):** The proxy cannot simply average local averages (i.e. $\text{Avg}(\text{Avg}_1, \text{Avg}_2)$ is mathematically incorrect due to varying sample sizes). 
+  * *Mechanism:* The proxy rewrites the query to request both `SUM` and `COUNT` from all shards, retrieves them, and calculates:
+    $$\text{Global Average} = \frac{\sum_{i=1}^N \text{Local Sum}_i}{\sum_{i=1}^N \text{Local Count}_i}$$
+
+#### 2. Sorting, Limits & Pagination (`ORDER BY`, `LIMIT`, `OFFSET`)
+If you query `ORDER BY score LIMIT 10 OFFSET 100` without a shard key:
+1. The proxy must execute `LIMIT 110` (Limit + Offset) across **every** shard in parallel.
+2. If there are 10 shards, the proxy retrieves $1,100$ rows over the network.
+3. The proxy sorts all 1,100 rows in its own local memory, drops the first 100 rows, and returns the top 10 rows to the client.
+4. *Scale Bottleneck:* Higher offsets exponentially increase memory usage and CPU load on the proxy.
+
+---
+
+### C. Challenges of Database Sharding
+1. **Distributed Joins:**
+   * Joining tables residing on different shards is highly inefficient. If `users` and `orders` are on different shards, joining them requires pulling entire tables into application memory or routing proxy memory to run the join.
+   * *Mitigation:* Denormalize databases to replicate lookup tables (e.g. `countries`) to *every* shard, or split data mappings so related entities (e.g. a user and all their orders) always land on the same shard (co-location).
+2. **Transactional Integrity (ACID Compliance):**
+   * Transactions spanning multiple shards require **Two-Phase Commit (2PC)** or **Sagas** to prevent inconsistent database states, which introduces network coordination delays and lock contention.
+3. **Re-sharding & Shard Splits:**
+   * When a shard fills up or physical write limits are hit, it must be split (e.g., Shard 1 splits into Shard 1A and 1B). Migrating gigabytes of active transactional data across networks without dropping connection requests requires highly complex, error-prone replication syncs.
+4. **Operational Complexity:**
+   * Consistent backups across multiple independent database servers, executing schema migrations in lockstep, and setting up failover replication nodes increase overall server costs and administration overhead.
+
+---
+
+## 3. Visual Architecture Diagram
 
 Below is a production architecture using a Sharding Proxy (e.g. Vitess or Citus) to route requests, coupled with a Directory Lookup service for dynamic tenant mapping.
 
@@ -81,7 +135,7 @@ graph TD
 
 ---
 
-## 3. Data Models & API Signatures
+## 4. Data Models & API Signatures
 
 ### Schema Design: Lookup Directory Mapping (SQL)
 For systems using directory-based sharding (dynamic routing catalog).
@@ -135,7 +189,7 @@ CREATE TABLE orders_shard_2 PARTITION OF orders
 
 ---
 
-## 4. Operational Flows
+## 5. Operational Flows
 
 ### A. Read Operational Flow (Routed vs Scatter-Gather)
 
@@ -178,7 +232,7 @@ When a shard becomes too large, it must be split (e.g., Shard A splits into Shar
 
 ---
 
-## 5. High Availability, Failovers & Bottlenecks
+## 6. High Availability, Failovers & Bottlenecks
 
 ### Mitigating Single Points of Failure (SPOFs)
 * **Proxy HA:** Sharding proxy instances (like Vitess's `vtgate`) must be stateless and deployed behind a Layer 4 load balancer.
@@ -193,7 +247,7 @@ When a business operation spans multiple shards, normal database transactions ca
 
 ---
 
-## 6. Comprehensive Interview Q&A
+## 7. Comprehensive Interview Q&A
 
 ### Q1: What is the "Celebrity / Hotspotting" problem in database sharding, and how do you resolve it?
 **Answer:**
