@@ -4,6 +4,17 @@
 
 Sharding is the process of horizontally partitioning a database, separating rows of a single table across multiple physical database instances. Unlike replication (where every node holds the complete dataset), sharding distributes the dataset so that each physical server (shard) holds a unique subset of the data.
 
+### The Scaling Pathway: When to Shard (The "Last Resort" Rule)
+In a system design interview, **never jump straight to database sharding**. Sharding introduces immense architectural complexity (cross-shard joins, distributed transaction rollbacks, data integrity challenges). You should present sharding as a **last resort** after exhausting simpler options.
+
+#### The Progressive Scaling Pathway:
+1. **Vertical Scaling (Scale-Up):** Upgrading the CPU, RAM, and Storage of the database server (e.g., using a high-resource AWS RDS instance). Requires no codebase changes.
+2. **Read Replicas:** Deploying replica instances to offload read operations from the primary writer node. Best for read-heavy workloads (e.g., $90\%$ reads, $10\%$ writes).
+3. **Caching Layer:** Placing an in-memory cache (e.g. Redis or Memcached) in front of the database to intercept hot read query paths.
+4. **Database Sharding:** Proposed **only** when:
+   * **Storage capacity** exceeds the physical disk limit of a single server instance (typically $>10\text{ TB}$ of active transaction records).
+   * **Write throughput** exceeds the maximum physical IOPS write speed of a single server (e.g., standard SSD limit of 80,000 IOPS).
+
 ### Mathematical Estimations & Scaling Calculations
 
 #### A. Database Capacity & Shard Sizing Sizing Math
@@ -96,8 +107,28 @@ If you query `ORDER BY score LIMIT 10 OFFSET 100` without a shard key:
    * Transactions spanning multiple shards require **Two-Phase Commit (2PC)** or **Sagas** to prevent inconsistent database states, which introduces network coordination delays and lock contention.
 3. **Re-sharding & Shard Splits:**
    * When a shard fills up or physical write limits are hit, it must be split (e.g., Shard 1 splits into Shard 1A and 1B). Migrating gigabytes of active transactional data across networks without dropping connection requests requires highly complex, error-prone replication syncs.
-4. **Operational Complexity:**
-   * Consistent backups across multiple independent database servers, executing schema migrations in lockstep, and setting up failover replication nodes increase overall server costs and administration overhead.
+### D. Shard Routing Architecture: Application-Side vs. Proxy-Based
+
+When implementing database sharding, you must decide where the query routing logic lives. In system design interviews, be prepared to discuss this trade-off.
+
+#### 1. Application-Side Routing
+* **Mechanism:** The application code (using libraries like Hibernate or custom routing datasources) directly calculates the destination shard database instance for each query and opens a connection directly to that physical instance.
+* **Pros:**
+  * **Low Latency:** No intermediary network hops between application servers and databases.
+  * **Operational Simplicity:** No additional infrastructure proxy tier to maintain, scale, or failover.
+* **Cons:**
+  * **Code Coupling:** Tightly couples application database code to physical database layout. Changing the shard layout requires redeploying the application.
+  * **Connection Pooling Scaling:** Managing database connection pools (e.g. HikariCP) from $M$ application nodes across $N$ physical shards can exhaust MySQL/PostgreSQL connection limits.
+
+#### 2. Proxy-Based Routing (Vitess, Citus)
+* **Mechanism:** Application servers connect to a stateless proxy layer (e.g., VTGate) using standard SQL drivers. The proxy parses SQL queries, checks the topology catalog, executes the queries on the underlying shards, and returns the merged results.
+* **Pros:**
+  * **Clean Decoupling:** The application treats the proxy as a single, large SQL database, hiding sharding mechanics from developers.
+  * **Connection Concentration:** The proxy handles connection pooling, preventing connection limits from being exhausted.
+  * **Dynamic Resharding:** Enables safe live migrations of keys without application interruption.
+* **Cons:**
+  * **Extra Network Hop:** Adds a proxy latency overhead of $\approx 1-3\text{ ms}$ per query.
+  * **Infrastructure Overhead:** Requires operating and scaling a highly available, load-balanced proxy cluster.
 
 ---
 

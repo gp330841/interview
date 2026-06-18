@@ -4,12 +4,38 @@
 **DBMS (Database Management System)** is a software that interacts with end-users, applications, and the database itself to capture and analyze data. 
 **RDBMS (Relational Database Management System)** is a type of DBMS that stores data in a structured format, using rows and columns (tables). It enforces relationships between tables using primary and foreign keys.
 
+```sql
+-- Example of RDBMS structured data and relationships
+CREATE TABLE Departments (
+    ID INT PRIMARY KEY,
+    Name VARCHAR(50)
+);
+
+CREATE TABLE Employees (
+    ID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    DepartmentID INT,
+    FOREIGN KEY (DepartmentID) REFERENCES Departments(ID)
+);
+```
+
 ## 2. Explain the ACID properties in detail.
 ACID properties guarantee that database transactions are processed reliably:
 *   **Atomicity**: "All or nothing". A transaction is treated as a single unit. If any part of it fails, the entire transaction fails, and the database state is left unchanged.
 *   **Consistency**: A transaction must bring the database from one valid state to another. It must satisfy all defined rules, constraints, and triggers.
 *   **Isolation**: Concurrent execution of transactions leaves the database in the same state that would have been obtained if the transactions were executed sequentially.
 *   **Durability**: Once a transaction has been committed, it will remain so, even in the event of power loss, crashes, or errors (usually implemented via transaction logs).
+
+```sql
+-- Example of ACID Transaction
+START TRANSACTION;
+
+UPDATE Accounts SET Balance = Balance - 100 WHERE AccountID = 1;
+UPDATE Accounts SET Balance = Balance + 100 WHERE AccountID = 2;
+
+-- If both succeed, commit. If any fails, ROLLBACK.
+COMMIT;
+```
 
 ## 3. What is Normalization? Explain the normal forms (1NF, 2NF, 3NF, BCNF).
 Normalization is the process of organizing data to reduce redundancy and improve data integrity.
@@ -18,9 +44,35 @@ Normalization is the process of organizing data to reduce redundancy and improve
 *   **3NF (Third Normal Form)**: Must be in 2NF. There should be no transitive dependency (non-key attributes should not depend on other non-key attributes).
 *   **BCNF (Boyce-Codd Normal Form)**: A stricter version of 3NF. For every non-trivial functional dependency $X \rightarrow Y$, $X$ must be a superkey.
 
+```sql
+-- Unnormalized (1NF violation due to multiple phone numbers)
+-- CREATE TABLE Students (ID INT, Name VARCHAR(50), Phones VARCHAR(100));
+
+-- Normalized to 1NF (Atomic values)
+CREATE TABLE Students (
+    ID INT PRIMARY KEY,
+    Name VARCHAR(50)
+);
+CREATE TABLE StudentPhones (
+    StudentID INT,
+    Phone VARCHAR(20),
+    PRIMARY KEY (StudentID, Phone),
+    FOREIGN KEY (StudentID) REFERENCES Students(ID)
+);
+```
+
 ## 4. What is Denormalization and when would you use it?
 Denormalization is the deliberate introduction of redundancy into a database to improve read performance. It involves combining tables to reduce the overhead of complex joins.
 **When to use:** In read-heavy systems (like Data Warehouses or reporting systems) where read performance is critical, and the cost of maintaining redundant data is acceptable.
+
+```sql
+-- Normalized Form (requires JOIN)
+SELECT o.OrderID, c.CustomerName, o.TotalAmount 
+FROM Orders o JOIN Customers c ON o.CustomerID = c.ID;
+
+-- Denormalized Form (faster read, CustomerName is duplicated in Orders table)
+SELECT OrderID, CustomerName, TotalAmount FROM Orders_Denormalized;
+```
 
 ## 5. Explain the CAP Theorem.
 The CAP theorem states that a distributed data store can only provide two of the following three guarantees simultaneously:

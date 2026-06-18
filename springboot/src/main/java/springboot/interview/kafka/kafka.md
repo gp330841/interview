@@ -1,5 +1,8 @@
 # Spring Boot - Apache Kafka Integration
 
+> [!TIP]
+> Looking for production scenario deep-dives and expert-level trick questions? Check out the [Advanced Kafka Scenario Q&A README](README.md).
+
 ## Table of Contents
 1. [Real-World Use Cases](#real-world-use-cases)
 2. [Beginner Level Questions](#beginner-level-questions)

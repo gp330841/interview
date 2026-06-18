@@ -8,10 +8,33 @@ Steps to optimize:
 4.  **Rewrite Queries**: Avoid correlated subqueries; replace them with `JOIN`s or CTEs. Avoid using functions on indexed columns in the `WHERE` clause (e.g., `WHERE YEAR(date_column) = 2023`), as it prevents index usage (Sargability).
 5.  **Update Statistics**: Ensure database statistics are up-to-date so the query optimizer makes good choices.
 
+```sql
+-- Viewing Execution Plan
+EXPLAIN ANALYZE SELECT * FROM Users WHERE Email = 'test@example.com';
+
+-- Non-Sargable vs Sargable query
+-- BAD (Index on CreatedAt cannot be used efficiently):
+-- SELECT * FROM Orders WHERE YEAR(CreatedAt) = 2023;
+
+-- GOOD (Index can be used):
+-- SELECT * FROM Orders WHERE CreatedAt >= '2023-01-01' AND CreatedAt < '2024-01-01';
+```
+
 ## 2. What is the N+1 Query Problem and how do you solve it?
 A common performance issue in ORMs (Object-Relational Mappers like Hibernate or Entity Framework).
 It occurs when a framework executes 1 query to retrieve a list of $N$ parent entities, and then executes $N$ additional separate queries to retrieve the child entities for each parent.
 *   **Solution**: Use Eager Loading (fetching the related entities in the initial query using a `JOIN`) or Batch Fetching (using an `IN` clause to fetch all related children in one go).
+
+```sql
+-- N+1 Problem in SQL terms:
+-- Query 1: SELECT * FROM Authors;
+-- (N times for each author): SELECT * FROM Books WHERE AuthorID = ?;
+
+-- Solution (Eager Loading with JOIN):
+SELECT a.*, b.* 
+FROM Authors a 
+LEFT JOIN Books b ON a.ID = b.AuthorID;
+```
 
 ## 3. What is Connection Pooling?
 Opening and closing database connections is an expensive, time-consuming operation. 
@@ -26,6 +49,20 @@ Replication involves copying data from one database server to another to ensure 
 Both are techniques to break large databases into smaller, more manageable pieces.
 *   **Partitioning (Vertical or Horizontal)**: Divides a large table into smaller physical pieces within the **same** database instance. Usually transparent to the application. (e.g., Partitioning a sales table by year).
 *   **Sharding**: A type of horizontal partitioning where data is distributed across **multiple** independent database servers (nodes). Each shard holds a subset of the data. The application layer (or a proxy) must contain logic to determine which shard to query based on a Shard Key. Sharding allows infinite horizontal scaling but makes joins across shards extremely difficult.
+
+```sql
+-- Example of Partitioning Syntax (PostgreSQL)
+CREATE TABLE Measurement (
+    city_id         int not null,
+    logdate         date not null,
+    peaktemp        int,
+    unitsales       int
+) PARTITION BY RANGE (logdate);
+
+-- Creating Partitions
+CREATE TABLE Measurement_y2023 PARTITION OF Measurement
+    FOR VALUES FROM ('2023-01-01') TO ('2024-01-01');
+```
 
 ## 6. What is Consistent Hashing? (Used in Distributed Databases)
 In a sharded environment, if you use simple modulo hashing (`hash(id) % N_servers`) to determine data location, adding or removing a server changes the modulo for almost all keys, requiring massive data movement.

@@ -7,6 +7,14 @@ Isolation levels define the degree to which a transaction must be isolated from 
 *   **Repeatable Read**: Guarantees that if a transaction reads the same row twice, it will get the same value, even if other transactions commit changes in the meantime. (Prone to Phantom Reads). Default in MySQL (InnoDB).
 *   **Serializable**: The highest level. Transactions are executed in a way that the outcome is equivalent to executing them sequentially, one after the other. Prevents all concurrency phenomena but has the lowest concurrency/performance.
 
+```sql
+-- Setting Transaction Isolation Level
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+START TRANSACTION;
+-- ... SQL statements ...
+COMMIT;
+```
+
 ## 2. Explain Dirty Reads, Non-repeatable Reads, and Phantom Reads.
 *   **Dirty Read**: Transaction A reads a value modified by Transaction B before Transaction B commits. If B rolls back, A has read data that "never existed."
 *   **Non-Repeatable Read**: Transaction A reads a row. Transaction B modifies or deletes that row and commits. Transaction A reads the same row again and gets a different result.
@@ -16,6 +24,14 @@ Isolation levels define the degree to which a transaction must be isolated from 
 Locks are mechanisms used to ensure data consistency during concurrent access.
 *   **Shared Lock (S-Lock)**: Acquired for read operations (`SELECT`). Multiple transactions can hold shared locks on the same resource simultaneously. Prevents other transactions from acquiring exclusive locks.
 *   **Exclusive Lock (X-Lock)**: Acquired for write operations (`INSERT`, `UPDATE`, `DELETE`). Only one transaction can hold an exclusive lock on a resource at a time. It blocks both shared and exclusive locks from other transactions.
+
+```sql
+-- Explicitly requesting a Shared Lock (S-Lock)
+SELECT * FROM Products WHERE ProductID = 10 FOR SHARE;
+
+-- Explicitly requesting an Exclusive Lock (X-Lock)
+SELECT * FROM Products WHERE ProductID = 10 FOR UPDATE;
+```
 
 ## 4. What is a Deadlock? How do databases handle them?
 A deadlock occurs when two or more transactions are waiting for each other to release locks, creating a cycle of dependencies where none can proceed.
@@ -34,3 +50,18 @@ Instead of using locks to block readers while writers are writing, MVCC keeps mu
 ## 6. What is Pessimistic vs Optimistic Locking?
 *   **Pessimistic Locking**: Assumes conflicts are likely. Acquires locks on data as soon as it is read and holds them until the transaction completes. Good for high-contention environments but reduces concurrency.
 *   **Optimistic Locking**: Assumes conflicts are rare. Does not lock data when reading. Instead, when updating, it checks if the data has been modified by another transaction since it was read (often using a version number or timestamp column). If it has changed, the transaction aborts and must be retried. Good for read-heavy, low-conflict environments.
+
+```sql
+-- Pessimistic Locking Example
+SELECT Balance FROM Accounts WHERE ID = 1 FOR UPDATE;
+UPDATE Accounts SET Balance = Balance - 100 WHERE ID = 1;
+
+-- Optimistic Locking Example (Using a Version Column)
+-- Step 1: Read data and version
+-- SELECT Balance, Version FROM Accounts WHERE ID = 1; (Assume Version = 5)
+
+-- Step 2: Attempt update only if version hasn't changed
+UPDATE Accounts SET Balance = Balance - 100, Version = Version + 1 
+WHERE ID = 1 AND Version = 5;
+-- If affected rows == 0, another transaction changed the data. Retry needed.
+```

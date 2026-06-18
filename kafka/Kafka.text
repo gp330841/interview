@@ -1,0 +1,172 @@
+1. Consumer Lag & Backpressure
+👉 Scenario:Your consumer group is lagging behind heavily in production.
+Questions:
+	•	How do you identify the root cause of lag?
+	•	What metrics/tools will you check (e.g., offsets, throughput)?
+	•	How would you fix it without downtime?
+What to expect:
+	•	Lag monitoring (Burrow, Kafka Exporter, Dynatrace if integrated)
+	•	Partition vs consumer count mismatch
+	•	Slow processing / I/O bottleneck
+	•	Batch processing vs real-time tuning
+
+2. Partition Strategy
+👉 Scenario:You have an Orders topic with uneven load (some partitions overloaded).
+Questions:
+	•	Why does this happen?
+	•	How would you redesign partitioning?
+	•	What key would you choose?
+Expected depth:
+	•	Key-based partitioning issues (hot keys)
+	•	Custom partitioner vs random
+	•	Trade-off: ordering vs scalability
+
+3. Message Ordering Guarantee
+👉 Scenario:Your system requires strict ordering for a user’s transactions.
+Questions:
+	•	How will Kafka ensure ordering?
+	•	What happens if you increase partitions later?
+	•	Can ordering break?
+Expected answer:
+	•	Ordering only within partition
+	•	Same key → same partition
+	•	Increasing partitions breaks ordering guarantees
+
+4. Retry & Failure Handling
+👉 Scenario:Consumer fails while processing a message.
+Questions:
+	•	How do you retry?
+	•	What is DLQ (Dead Letter Queue)?
+	•	How to avoid infinite retry loops?
+Expected:
+	•	Retry topics / exponential backoff
+	•	DLQ pattern
+	•	Idempotent consumers
+
+5. Exactly Once vs At Least Once
+👉 Scenario:Your payment system cannot process duplicate transactions.
+Questions:
+	•	Which delivery semantics will you use?
+	•	How will you implement it?
+Expected:
+	•	Idempotent producer + transactions
+	•	Consumer-side deduplication
+
+ 
+6. ISR Shrink Scenario (🔥 Must Ask)
+👉 Scenario:One broker goes down, ISR shrinks.
+Questions:
+	•	What happens internally?
+	•	What if ISR < min.insync.replicas?
+	•	What happens with acks=all?
+Expected:
+	•	Producer gets error if ISR < min.insync.replicas
+	•	Data safety vs availability trade-off
+
+7. High Throughput Optimization
+👉 Scenario:System needs to process 1M messages/sec.
+Questions:
+	•	How do you scale Kafka?
+	•	Producer tuning?
+	•	Broker tuning?
+Expected:
+	•	Increase partitions
+	•	Batch.size, linger.ms tuning
+	•	Compression (snappy/lz4)
+	•	Horizontal scaling
+
+8. Rebalancing Impact
+👉 Scenario:Consumers frequently join/leave causing rebalancing.
+Questions:
+	•	What happens during rebalance?
+	•	Why is it problematic?
+	•	How to reduce impact?
+Expected:
+	•	Stop-the-world pause
+	•	Use cooperative rebalancing
+	•	Sticky assignor
+
+9. Data Loss Scenario
+👉 Scenario:Messages are missing in production.
+Questions:
+	•	Where could data loss happen?
+	•	How to prevent it?
+Expected:
+	•	acks=0 / acks=1 risk
+	•	Unclean leader election
+	•	Producer retries disabled
+
+10. Schema Evolution (Kafka + Avro)
+👉 Scenario:You need to change message schema.
+Questions:
+	•	How do you ensure backward compatibility?
+	•	What happens if consumer is not updated?
+Expected:
+	•	Schema Registry
+	•	Compatibility modes (backward/forward/full)
+
+11. Multi-DC / Disaster Recovery
+👉 Scenario:Your Kafka cluster goes down completely.
+Questions:
+	•	How do you design DR?
+	•	What tools?
+Expected:
+	•	MirrorMaker 2
+	•	Active-active vs active-passive
+
+12. Kafka vs Traditional Queue (Deep Insight)
+👉 Scenario:Why Kafka over RabbitMQ for event streaming?
+Expected:
+	•	Pull vs push
+	•	Retention vs deletion
+	•	Replay capability
+
+13. Exactly Once Internals (Advanced Deep Dive)
+👉 Scenario:Explain how Kafka achieves exactly-once.
+Expected:
+	•	Idempotent producer (producer ID + sequence)
+	•	Transactions (write + offset commit atomically)
+
+14. Compaction vs Retention
+👉 Scenario:You want latest state per key.
+Questions:
+	•	What will you use?
+	•	How does compaction work?
+Expected:
+	•	Log compaction keeps latest key
+
+15. Consumer Offset Management
+👉 Scenario:Consumer crashes after processing but before committing offset.
+Questions:
+	•	What happens?
+	•	How to handle duplicates?
+Expected:
+	•	At-least-once behavior
+	•	Idempotent processing
+
+🔴 Expert-Level Trick Questions (Catch Cheating Candidates)
+16. “If partitions < consumers, what happens?”
+👉 Idle consumers
+
+17. “If consumers < partitions?”
+👉 Some consumers handle multiple partitions
+
+18. “Can Kafka guarantee global ordering?”
+👉 ❌ No — only per partition
+
+19. “What happens if leader dies before follower sync?”
+👉 Data loss possible (depends on ISR & config)
+
+20. “Why not use single partition for ordering?”
+👉 No scalability, throughput bottleneck
+ 
+How do you choose partition key?
+Expected answer:Partition key depends on ordering and load distribution.
+Example:
+	•	accountRequestId → ordering per account request
+	•	clientId → ordering per client
+	•	advisorId → may cause hot partitions if some advisors are very active
+Trade-off:
+Ordering requirement vs scalability
+ 
+ 

@@ -23,21 +23,21 @@ MySQL employs a client-server architecture with a clear separation between the c
 
 ```mermaid
 graph TD
-    Client[Client Applications] --> ConnPool[1. Connection Pool / Thread Manager]
+    Client["Client Applications"] --> ConnPool["1. Connection Pool / Thread Manager"]
     subgraph MySQL Server Core
-        ConnPool --> SQLInterface[2. SQL Interface]
-        SQLInterface --> Parser[3. Parser & Preprocessor]
-        Parser --> Optimizer[4. Query Optimizer]
-        Optimizer --> ExecEngine[5. Execution Engine]
-        ExecEngine --> QueryCache[6. Buffer Pool / Cache Manager]
+        ConnPool --> SQLInterface["2. SQL Interface"]
+        SQLInterface --> Parser["3. Parser & Preprocessor"]
+        Parser --> Optimizer["4. Query Optimizer"]
+        Optimizer --> ExecEngine["5. Execution Engine"]
+        ExecEngine --> QueryCache["6. Buffer Pool / Cache Manager"]
     end
     subgraph Pluggable Storage Engines
-        ExecEngine --> InnoDB[InnoDB Storage Engine]
-        ExecEngine --> MyISAM[MyISAM Storage Engine]
-        ExecEngine --> Memory[Memory Engine]
+        ExecEngine --> InnoDB["InnoDB Storage Engine"]
+        ExecEngine --> MyISAM["MyISAM Storage Engine"]
+        ExecEngine --> Memory["Memory Engine"]
     end
-    InnoDB --> Disk[(Disk/SSD Files: .ibd)]
-    MyISAM --> DiskMyISAM[(Disk Files: .MYD, .MYI)]
+    InnoDB --> Disk[("Disk/SSD Files: .ibd")]
+    MyISAM --> DiskMyISAM[("Disk Files: .MYD, .MYI")]
 ```
 
 ### Key Architectural Layers:
@@ -80,17 +80,17 @@ MySQL InnoDB uses **B+Tree** structures for its indexes.
 
 ```mermaid
 graph TD
-    Root[Root Node: Keys 50, 100] --> L1[Internal Node: Keys 20, 30]
-    Root --> L2[Internal Node: Keys 70, 80]
-    Root --> L3[Internal Node: Keys 120, 150]
+    Root["Root Node: Keys 50, 100"] --> L1["Internal Node: Keys 20, 30"]
+    Root --> L2["Internal Node: Keys 70, 80"]
+    Root --> L3["Internal Node: Keys 120, 150"]
     
-    L1 --> Leaf1[Leaf 1: 10, 15]
-    L1 --> Leaf2[Leaf 2: 20, 25]
-    L1 --> Leaf3[Leaf 3: 30, 45]
+    L1 --> Leaf1["Leaf 1: 10, 15"]
+    L1 --> Leaf2["Leaf 2: 20, 25"]
+    L1 --> Leaf3["Leaf 3: 30, 45"]
     
-    Leaf1 ====> Leaf2
-    Leaf2 ====> Leaf3
-    Leaf3 ====> Leaf4[...]
+    Leaf1 ==> Leaf2
+    Leaf2 ==> Leaf3
+    Leaf3 ==> Leaf4["..."]
     style Leaf1 fill:#d1e7dd,stroke:#0f5132
     style Leaf2 fill:#d1e7dd,stroke:#0f5132
     style Leaf3 fill:#d1e7dd,stroke:#0f5132
@@ -117,10 +117,13 @@ When querying using a secondary index, the database engine traverses the seconda
 ```mermaid
 sequenceDiagram
     autonumber
-    Query ->> Secondary Index B+Tree: Search for 'Name = Bob'
-    Secondary Index B+Tree -->> Query: Returns Primary Key (ID = 42)
-    Query ->> Clustered Index B+Tree: Search for 'ID = 42'
-    Clustered Index B+Tree -->> Query: Returns full row data (ID: 42, Name: Bob, Age: 30)
+    participant Q as Query
+    participant SI as Secondary Index B+Tree
+    participant CI as Clustered Index B+Tree
+    Q ->> SI: Search for 'Name = Bob'
+    SI -->> Q: Returns Primary Key (ID = 42)
+    Q ->> CI: Search for 'ID = 42'
+    CI -->> Q: Returns full row data (ID: 42, Name: Bob, Age: 30)
 ```
 
 **Optimization - Covering Index**: If the query only selects columns that are fully contained in the secondary index, InnoDB returns the values directly from the secondary index leaf node, skipping the lookup on the clustered index.
@@ -148,12 +151,12 @@ Every clustered index record contains hidden system columns:
 ```mermaid
 graph LR
     subgraph Active Clustered Index Record
-        Row[ID: 1 | Name: 'Charlie' | DB_TRX_ID: 105 | DB_ROLL_PTR: 0x8a92]
-     rowid
+        Row["ID: 1 | Name: 'Charlie' | DB_TRX_ID: 105 | DB_ROLL_PTR: 0x8a92"]
+        RowId["rowid"]
     end
     subgraph Undo Tablespace
-        Undo1[Undo Log Record 1<br>Name: 'Bob'<br>DB_TRX_ID: 102<br>DB_ROLL_PTR: 0x5b31]
-        Undo2[Undo Log Record 2<br>Name: 'Alice'<br>DB_TRX_ID: 98<br>DB_ROLL_PTR: NULL]
+        Undo1["Undo Log Record 1<br>Name: 'Bob'<br>DB_TRX_ID: 102<br>DB_ROLL_PTR: 0x5b31"]
+        Undo2["Undo Log Record 2<br>Name: 'Alice'<br>DB_TRX_ID: 98<br>DB_ROLL_PTR: NULL"]
     end
     Row -->|points to| Undo1
     Undo1 -->|points to| Undo2

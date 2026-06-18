@@ -7,6 +7,14 @@ An index is a data structure (usually a B-Tree or Hash table) associated with a 
 *   **Clustered Index**: Determines the physical order of data in a table. Because the data rows can be sorted in only one way, there can be **only one** clustered index per table (usually the Primary Key). The leaf nodes of a clustered index contain the actual data pages.
 *   **Non-Clustered Index**: Does not alter the physical order of the table. It creates a separate structure from the data rows. The leaf nodes contain the index key values and a pointer (row locator) to the actual data row. A table can have **multiple** non-clustered indexes.
 
+```sql
+-- Creating a Clustered Index (Often implicitly created via PRIMARY KEY)
+ALTER TABLE Users ADD PRIMARY KEY (UserID);
+
+-- Creating a Non-Clustered Index
+CREATE INDEX idx_user_email ON Users(Email);
+```
+
 ## 3. How does a B-Tree (and B+Tree) index work?
 A B-Tree (Balanced Tree) keeps data sorted and allows searches, sequential access, insertions, and deletions in logarithmic time.
 Most relational databases use a variant called **B+Tree**:
@@ -17,10 +25,23 @@ Most relational databases use a variant called **B+Tree**:
 ## 4. What is a Covering Index?
 A covering index is a non-clustered index that includes all the columns required by a specific query. If a query only selects columns that are part of the index, the database can retrieve the results directly from the index without having to look up the actual data rows in the table. This drastically reduces disk I/O and improves performance.
 
+```sql
+-- The Query
+SELECT FirstName, LastName FROM Employees WHERE DepartmentID = 5;
+
+-- The Covering Index (covers all columns used in WHERE and SELECT)
+CREATE INDEX idx_dept_name ON Employees(DepartmentID, FirstName, LastName);
+```
+
 ## 5. Explain Index Scan, Index Seek, and Table Scan.
 *   **Table Scan**: The database reads every row in the table from beginning to end. Very slow for large tables.
 *   **Index Scan**: The database reads all rows in the index structure. Faster than a table scan if the index is smaller than the table, but still reads the whole index.
 *   **Index Seek**: The database uses the B-Tree structure to navigate directly to the specific rows that match the filter criteria. This is the most efficient operation.
+
+```sql
+-- You can see scan/seek in the execution plan
+EXPLAIN SELECT * FROM Employees WHERE DepartmentID = 5;
+```
 
 ## 6. Why shouldn't you index every column?
 Indexes come with overhead:
@@ -32,3 +53,12 @@ Indexes come with overhead:
 A Hash Index uses a hash function to map keys to a specific bucket. 
 *   **Pros**: Extremely fast for exact match lookups (`WHERE id = 5`). Time complexity is O(1).
 *   **Cons**: Cannot be used for range queries (`WHERE id > 5`) or sorting, because the hashing process randomizes the order. Often used in in-memory databases or key-value stores (like Redis).
+
+```sql
+-- Creating a Hash Index (MySQL Memory Engine example)
+CREATE TABLE Sessions (
+    SessionID VARCHAR(50) PRIMARY KEY,
+    Data TEXT,
+    INDEX USING HASH (SessionID)
+) ENGINE=MEMORY;
+```
