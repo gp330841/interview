@@ -9,6 +9,7 @@ Welcome to the Database Systems engineering guide. This document provides a high
 This repository is structured into specialized packages for deep-dive interview preparation:
 *   [SQL (MySQL Focus)](file:///Users/yogeshwarpatel/Workspace/interview/database/sql/README.md) - Deep dive into MySQL architecture, InnoDB internals, indexing (B+Trees), transactions, MVCC, locking, and tuning.
 *   [NoSQL (MongoDB Focus)](file:///Users/yogeshwarpatel/Workspace/interview/database/nosql/README.md) - Deep dive into MongoDB architecture, WiredTiger engine, data modeling (embed vs. reference), replication, sharding, and write/read concerns.
+*   [Partitioning & Sharding Guide](file:///Users/yogeshwarpatel/Workspace/interview/database/Partitioning_and_Sharding.md) - Conceptual differences, query pruning, PostgreSQL range/hash partitioning, MongoDB sharding, and Cassandra wide-column consistent hashing.
 
 ---
 
