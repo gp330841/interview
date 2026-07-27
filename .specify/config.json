@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "framework": "Spec-Driven Development (SDD)",
+  "language": "Java",
+  "targetVersion": "17",
+  "buildTool": "Maven/Gradle",
+  "paths": {
+    "templates": ".specify/templates",
+    "standards": ".specify/standards",
+    "workflows": ".specify/workflows",
+    "prompts": ".specify/prompts",
+    "specs": ".specify/specs"
+  },
+  "settings": {
+    "requireSpecBeforeCode": true,
+    "enforceThreadSafety": true,
+    "strictZeroPlaceholders": true
+  }
+}
