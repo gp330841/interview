@@ -1,4 +1,4 @@
-name: Java CI Build
+name: Java 25 CI Build
 
 on:
   push:
@@ -8,19 +8,19 @@ on:
 
 jobs:
   build:
-    name: Build & Verify Java Modules
+    name: Build & Verify Java 25 Modules
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: '25'
+          distribution: 'oracle'
           cache: 'maven'
 
-      - name: Build with Maven
+      - name: Build with Maven (JDK 25)
         run: mvn clean compile test-compile -B
