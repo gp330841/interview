@@ -1,0 +1,32 @@
+name: SDD Spec & Config Validation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate-sdd:
+    name: Validate .specify Structure & Config
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate JSON syntax of .specify/config.json
+        run: |
+          python3 -c "import json; json.load(open('.specify/config.json'))"
+          echo "✓ .specify/config.json is valid JSON."
+
+      - name: Verify SDD Required Directories Exist
+        run: |
+          REQUIRED_DIRS=(".specify/templates" ".specify/standards" ".specify/workflows" ".specify/prompts" ".specify/specs")
+          for dir in "${REQUIRED_DIRS[@]}"; do
+            if [ ! -d "$dir" ]; then
+              echo "Error: Required SDD directory $dir does not exist!"
+              exit 1
+            fi
+          done
+          echo "✓ All required SDD directories are present."
