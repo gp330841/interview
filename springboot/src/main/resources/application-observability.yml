@@ -7,6 +7,9 @@ management:
     export:
       prometheus:
         enabled: true
+    distribution:
+      percentiles-histogram:
+        http_server_requests: true
   tracing:
     sampling:
       probability: 0.1
@@ -28,3 +31,6 @@ spring:
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n%X{traceId} %X{spanId}"
+
+# Prometheus exemplar note: enabling exemplars may require Prometheus server and client support
+# Additional exemplar configuration and OTLP exemplar export may be needed in production.
