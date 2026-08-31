@@ -11,6 +11,8 @@
     </parent>
 
     <artifactId>gen-ai-spring-ai</artifactId>
+    <name>gen-ai-spring-ai</name>
+    <description>Spring Boot demo module for Spring AI ChatClient, memory advisors, and local mock fallbacks.</description>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>

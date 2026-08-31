@@ -22,5 +22,6 @@ jobs:
           distribution: 'oracle'
           cache: 'maven'
 
-      - name: Build with Maven (JDK 25)
-        run: mvn clean compile test-compile -B
+      - name: Build (multi-module) with Maven
+        # Use parallel build and run lifecycle that compiles, tests and packages every module
+        run: mvn -T 1C -B clean install

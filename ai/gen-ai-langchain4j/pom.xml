@@ -11,6 +11,8 @@
     </parent>
 
     <artifactId>gen-ai-langchain4j</artifactId>
+    <name>gen-ai-langchain4j</name>
+    <description>LangChain4j + Java LangGraph demo module: agent proxies, function-calling, and RAG pipeline.</description>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>

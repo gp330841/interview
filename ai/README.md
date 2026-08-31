@@ -1,4 +1,35 @@
-# The Complete Generative AI & System Design Reference Handbook
+# Generative AI & System Design Handbook
+
+This handbook is the single source for Generative AI engineering in this repository. It keeps the original deep technical content (transformers, tokenization, RAG, KV cache, RoPE, sampling) while providing a focused "AI modules" developer guide below.
+
+Quick start (local)
+
+- Build all AI modules: mvn -T 1C -B -pl ai/* clean install
+- Run Spring AI module (mock fallback if no API key): mvn -pl ai/gen-ai-spring-ai spring-boot:run
+- Run LangChain4j module: mvn -pl ai/gen-ai-langchain4j spring-boot:run
+
+Environment variables (recommended)
+
+- OPENAI_API_KEY — OpenAI API key (optional; modules can start in mock mode)
+- LANGCHAIN_API_KEY — LangChain/LangSmith tracing (optional)
+- SPRING_PROFILES_ACTIVE — 'local' or 'prod' profiles for Spring Boot
+
+Module overview
+
+- basics/: educational Python examples for tokenizers and vector search.
+- gen-ai-spring-ai/: Spring Boot demo using Spring AI ChatClient, memory advisors, and mock fallbacks (port 8081).
+- gen-ai-langchain4j/: LangChain4j agent demos, function-calling, and a Java LangGraph state engine (port 8082).
+- gen-ai-python/: LangGraph Python-based reference implementation.
+
+Operational notes
+
+- Use `./scripts/bootstrap.sh` to run a parallel multi-module build.
+- Add Maven Wrapper (mvnw) for reproducible CI builds — generation recommended on a machine with network access.
+
+Preserved content
+
+All original deep-dive sections (transformer math, RAG architectures, agentic patterns) remain in this file. The above section reorganizes the AI module guidance and developer workflow for clarity.
+
 
 This handbook serves as the single source of truth for Generative AI engineering, covering the deep mathematical foundations of Large Language Models (LLMs), inference parameters, Retrieval-Augmented Generation (RAG) system design, Agentic state machines, and JVM-specific execution mechanics.
 

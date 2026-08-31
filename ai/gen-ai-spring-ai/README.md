@@ -1,5 +1,48 @@
 # Spring AI Module (gen-ai-spring-ai)
 
+Purpose
+
+A focused Spring Boot demo showing how to integrate Spring AI's ChatClient, memory advisors, and safe mock fallbacks for local development.
+
+Goals
+
+- Demonstrate ChatClient usage, message memory advisors, and safe function-calling patterns.
+- Provide an opinionated local dev setup that works without secret keys (mock mode).
+- Show how to wire persistent ChatMemoryStore implementations (Redis/Postgres) for production.
+
+Quick start
+
+1. (Optional) export OPENAI_API_KEY
+   export OPENAI_API_KEY="YOUR_OPENAI_KEY"
+2. From repo root:
+   mvn -pl ai/gen-ai-spring-ai -T 1C clean package
+   mvn -pl ai/gen-ai-spring-ai spring-boot:run
+
+Default port & endpoints
+
+- Port: 8081
+- Chat endpoint: GET /api/ai/spring/chat?message=Hello
+- Health: GET /actuator/health
+
+Configuration & profiles
+
+- application-local.yml enables mock ChatModel when OPENAI_API_KEY is missing.
+- application-prod.yml expects a real provider and production-grade settings (timeouts, rate-limiting).
+
+Developer tips
+
+- To test conversation memory, use the sessionId query param where supported.
+- Replace InMemoryChatMemory with RedisChatMemoryStore for horizontal scaling.
+
+Security
+
+- Never commit API keys. Use environment variables, Vault, or GitHub Secrets in CI.
+
+References
+
+- See the module codemap in this README and the top-level ai/README for cross-module commands and tracing tips.
+
+
 This module is a dedicated Java Spring Boot project demonstrating the integration of **Spring AI** (1.0.0-M6) using standard Spring patterns.
 
 ---

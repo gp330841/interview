@@ -65,3 +65,63 @@ UPDATE Accounts SET Balance = Balance - 100, Version = Version + 1
 WHERE ID = 1 AND Version = 5;
 -- If affected rows == 0, another transaction changed the data. Retry needed.
 ```
+
+## 7. MVCC internals and visibility
+- MVCC stores multiple historical versions (tuples) of rows. Each version has transactional metadata (timestamp/txid, xmin/xmax in Postgres).
+- A reader picks the newest version visible to its snapshot; writers create new versions without blocking readers.
+- Garbage collection (VACUUM in Postgres, purge in InnoDB) removes expired versions — monitor GC lag to avoid bloat and long-running snapshots.
+- Write amplification: heavy update workloads under MVCC can increase storage and IO due to version churn.
+
+## 8. Lock granularity, escalation & intention locks
+- Granularity: row-level (fine), page/extent, table-level (coarse). Row locks maximize concurrency but have higher metadata overhead.
+- Lock escalation: some DBs (SQL Server) escalate many row locks to a table lock to reduce bookkeeping; tune thresholds and queries to avoid unwanted escalation.
+- Intention locks (e.g., Intention Shared/Exclusive) allow locking protocols that mix table and row locks safely.
+
+## 9. Optimistic retry strategies & backoff
+- Retry loop pattern (application-side): read → compute → attempt conditional update → if 0 rows affected, sleep/backoff and retry up to N times.
+- Backoff policies: constant small delay, exponential backoff with jitter, or randomized micro-sleeps for hot keys.
+- Idempotency: design operations to be idempotent or detect duplicate retries (use idempotency keys) to avoid double effects.
+
+## 10. Snapshot isolation vs Repeatable Read (DB-specific nuances)
+- SQL standard REPEATABLE READ differs across engines:
+  * PostgreSQL's REPEATABLE READ implements true Snapshot Isolation (no phantoms within a transaction snapshot). SERIALIZABLE provides additional serializability checks.
+  * MySQL/InnoDB REPEATABLE READ historically implements snapshot isolation with gap locks to avoid phantoms (depending on setting).
+- Understand your DB's concrete semantics — tests or official docs help avoid surprises.
+
+## 11. Database-specific behavior (quick notes)
+- PostgreSQL:
+  * MVCC via xmin/xmax, snapshots, no read locks for SELECT by default.
+  * SERIALIZABLE uses predicate locks & may raise serialization errors that require retries.
+- MySQL / InnoDB:
+  * MVCC with undo logs; gap locks used under REPEATABLE READ or when using FOR UPDATE with range scans.
+  * Locking behavior varies by isolation and query patterns (index usage matters).
+- SQL Server:
+  * Row/page/table locks with optional Read Committed Snapshot Isolation (RCSI) which uses row versions.
+  * Lock escalation policy configurable; deadlock detection built-in.
+- Oracle:
+  * Uses read consistency (undo-based), writers don't block readers; `SELECT ... FOR UPDATE` acquires row locks.
+
+## 12. Deadlock avoidance & mitigation techniques
+- Acquire locks in a consistent global order (sort keys) to prevent cycles.
+- Keep transactions short and do minimal work while holding locks (avoid user prompts inside transactions).
+- Use lower isolation where safe (Read Committed) to reduce locking pressure.
+- Implement retry-on-deadlock with exponential backoff and limits; capture and log deadlock victims to analyze patterns.
+
+## 13. Monitoring, metrics & troubleshooting
+- Important metrics: lock wait time, number of lock timeouts/deadlocks, long-running transactions, MVCC version count, undo/undo tablespace growth, transaction ID wraparound warnings (Postgres).
+- Tools: `pg_stat_activity`, `pg_locks` (Postgres); `SHOW ENGINE INNODB STATUS`, `information_schema.innodb_trx` (MySQL); SQL Server DMVs for locks.
+- Regularly profile slow queries and analyze wait stats to identify contention hotspots.
+
+## 14. Practical patterns & anti-patterns
+- Use optimistic locking for low write contention, e.g., user profile edits, counters with low concurrency.
+- Use pessimistic locks for critical sections with high write contention, or when external resources must be coordinated (e.g., payment gateway state transitions).
+- Avoid SELECT N+1 patterns and long-running cursors inside transactions.
+- Prefer LIMIT/ORDER + indexed predicates for range updates to reduce scanned rows and lock footprint.
+
+## 15. Short interview-ready answers
+- When to use optimistic vs pessimistic: "Use optimistic when conflicts are rare and retries are cheap; use pessimistic when conflicts are frequent or the cost of retry is high (financial transactions)."
+- Why MVCC helps: "MVCC provides non-blocking reads by snapshotting row versions, improving read throughput at the cost of storage and GC overhead."
+
+---
+
+If you want, can also add sample code for application-level retry loops (Java + Spring/JPA) and a short checklist for DB configuration (innodb_lock_wait_timeout, max_prepared_transactions, vacuum settings).

@@ -26,3 +26,18 @@ Explore the deep-dive directories below for targeted interview preparation:
 *   `problems/java/` - Java-based implementations for standard data structures and algorithmic problems.
 *   `problems/text/` - Textual notes, explanations, and non-coding responses to interview questions.
 
+---
+
+## Monorepo (Maven) usage
+This repository is organized as a Maven multi-module project (root pom.xml with <modules/> entries). Useful commands:
+
+- Build and install all modules: mvn -T 1C clean install
+- Build a specific module and its dependencies: mvn -pl <module> -am clean install
+- Run tests for all modules: mvn test
+- Run the springboot module locally: mvn -pl springboot spring-boot:run
+
+Notes:
+- Consider adding the Maven Wrapper to ensure consistent Maven version for contributors (e.g., run a local maven wrapper generation command like `mvn -N io.takari:maven:wrapper`).
+- CI should run a multi-module install (e.g., `mvn -T 1C clean install`).
+- A convenient bootstrap script is available at `./scripts/bootstrap.sh` to run a parallel multi-module build locally.
+

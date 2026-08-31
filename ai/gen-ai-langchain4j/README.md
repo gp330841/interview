@@ -1,4 +1,40 @@
-# LangChain4j & Custom State Graph Module (gen-ai-langchain4j)
+# LangChain4j & LangGraph (gen-ai-langchain4j)
+
+Purpose
+
+This module demonstrates JVM-native agent orchestration: LangChain4j dynamic proxies, automatic function-calling (@Tool), a local RAG pipeline, and a Java implementation of a LangGraph-style state machine for multi-step agent flows.
+
+Quick start
+
+1. Export provider keys (optional for mock mode):
+   export OPENAI_API_KEY="YOUR_OPENAI_KEY"
+   export LANGCHAIN_API_KEY="YOUR_LANGCHAIN_KEY"
+2. Build and run from repo root:
+   mvn -pl ai/gen-ai-langchain4j -T 1C clean package
+   mvn -pl ai/gen-ai-langchain4j spring-boot:run
+
+Default port & endpoints
+
+- Port: 8082
+- Agent (tool-calling): GET /api/ai/langchain/agent?message=Is%20booking%20LH123%20delayed?
+- RAG query: GET /api/ai/rag/query?question=What%20is%20the%20return%20policy?
+- LangGraph chat: GET /api/ai/langgraph/chat?sessionId=...&message=...
+- Health: GET /actuator/health
+
+Tracing & observability
+
+- Enable LangChain tracing with LANGCHAIN_TRACING_V2=true and LANGCHAIN_API_KEY set.
+- Use Spring Boot Actuator and Micrometer (Prometheus) for metrics. Configure exporter properties in application-prod.yml.
+
+Production notes
+
+- Replace in-memory vector stores and memory stores with long-lived services (Redis, Postgres, or external vector DB like Milvus/Weaviate).
+- Secure tool methods: validate and sanitize arguments of any method exposed via @Tool before executing them.
+
+References
+
+- See the top-level ai/README for combined commands and the scripts/bootstrap.sh helper.
+
 
 This module demonstrates advanced Generative AI orchestration patterns in Java (Spring Boot) using **LangChain4j** and a custom **Java State Graph Engine** (recreating Python's LangGraph architecture in the JVM).
 
