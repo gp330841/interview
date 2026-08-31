@@ -1,0 +1,26 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+exporters:
+  jaeger:
+    endpoint: "jaeger:14250"
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [jaeger]
+    metrics:
+      receivers: [otlp]
+      exporters: []
+
+# Enable the Prometheus metrics endpoint for the collector itself
+telemetry:
+  metrics:
+    prometheus:
+      endpoint: ":8888/metrics"

@@ -41,3 +41,19 @@ Notes:
 - CI should run a multi-module install (e.g., `mvn -T 1C clean install`).
 - A convenient bootstrap script is available at `./scripts/bootstrap.sh` to run a parallel multi-module build locally.
 
+Docker and local orchestration
+
+A docker-compose is provided to build and run the services plus observability stack (OpenTelemetry Collector, Jaeger, Prometheus):
+
+- Build & run: docker compose -f docker/docker-compose.yml up --build
+- Services available on:
+  - Spring Boot: http://localhost:8080
+  - Spring AI module: http://localhost:8081
+  - LangChain4j module: http://localhost:8082
+  - Jaeger UI: http://localhost:16686
+  - Prometheus: http://localhost:9090
+
+Environment variables
+
+- OTEL_EXPORTER_OTLP_ENDPOINT is set automatically for containers to http://otel-collector:4317. To run locally outside compose, set it to your collector endpoint.
+
